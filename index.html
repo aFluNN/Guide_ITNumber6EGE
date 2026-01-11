@@ -18,14 +18,21 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
-        
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
         }
 
         .font-mono {
@@ -54,49 +61,49 @@
             background: #94a3b8; 
         }
         
-        /* Modal Animation & Style */
+        /* Modal Styles & Animations */
         .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.6); /* Темнее для контраста */
-            backdrop-filter: blur(8px); /* Сильное размытие всего фона */
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        .animate-modal-in {
-            animation: fadeIn 0.2s ease-out forwards;
-        }
-        
-        .animate-fade-in {
-            animation: simpleFade 0.3s ease-out forwards;
-        }
-        @keyframes simpleFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .animate-scale-in {
+            animation: scaleIn 0.2s ease-out forwards;
         }
 
-        /* --- BACKGROUND ANIMATION (UPDATED) --- */
+        /* --- BACKGROUND ANIMATION --- */
         .background-shapes {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0; /* Самый нижний слой */
+            z-index: 0;
             overflow: hidden;
             pointer-events: none;
         }
 
         .shape {
             position: absolute;
-            bottom: -150px; /* Start below the screen */
-            background: rgba(99, 102, 241, 0.1); /* Indigo tint */
+            bottom: -150px;
             border-radius: 15%;
+            will-change: transform, opacity;
             animation: floatUp linear infinite;
         }
 
-        /* Animation: Start below, go to top */
         @keyframes floatUp {
             0% {
                 bottom: -150px;
@@ -104,20 +111,17 @@
                 opacity: 0;
             }
             10% {
-                opacity: 0.8;
+                opacity: 0.6;
             }
             90% {
-                opacity: 0.5;
+                opacity: 0.4;
             }
             100% {
-                bottom: 110vh; /* Go above screen */
+                bottom: 110vh;
                 transform: rotate(360deg) scale(1.2);
                 opacity: 0;
             }
         }
-
-        /* Generating randomized positions via CSS nth-child would be long, 
-           doing it in React style below is cleaner */
     </style>
 </head>
 <body>
@@ -139,24 +143,23 @@
         const IconEye = () => <i data-lucide="eye" className="w-5 h-5"></i>;
         const IconHelp = () => <i data-lucide="help-circle" className="w-5 h-5"></i>;
 
-        // --- BACKGROUND COMPONENT (Improved) ---
+        // --- BACKGROUND COMPONENT ---
         const BackgroundEffect = () => {
-            // Generate deterministic random-like styles for shapes
-            const shapes = Array.from({ length: 15 }).map((_, i) => {
-                const size = 30 + (i * 7) % 80; // Size between 30 and 110
-                const left = (i * 7) % 95; // Position 0-95%
-                const duration = 15 + (i * 3) % 20; // 15-35s
-                const delay = (i * 2) % 15; // 0-15s delay
-                const color = i % 3 === 0 ? 'rgba(99, 102, 241, 0.08)' : // Indigo
-                              i % 3 === 1 ? 'rgba(16, 185, 129, 0.08)' : // Green
-                                            'rgba(239, 68, 68, 0.08)';   // Red
+            const shapes = Array.from({ length: 20 }).map((_, i) => {
+                const size = 30 + (i * 7) % 90; 
+                const left = (i * 6) % 98; 
+                const duration = 20 + (i * 2) % 25; 
+                const delay = -1 * (Math.random() * duration); 
+                const color = i % 3 === 0 ? 'rgba(99, 102, 241, 0.08)' : 
+                              i % 3 === 1 ? 'rgba(16, 185, 129, 0.08)' : 
+                                            'rgba(239, 68, 68, 0.08)'; 
                 
                 return {
                     width: size,
                     height: size,
                     left: `${left}%`,
                     animationDuration: `${duration}s`,
-                    animationDelay: `-${delay}s`, // Negative delay makes them appear started
+                    animationDelay: `${delay}s`,
                     backgroundColor: color
                 };
             });
@@ -413,7 +416,7 @@ t.done()`,
 
         // --- COMPONENTS ---
 
-        const Navigation = ({ activeTab, setActiveTab }) => (
+        const Navigation = ({ activeTab, onTabChange }) => (
             <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -431,7 +434,7 @@ t.done()`,
                             ].map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setActiveTab(item.id)}
+                                    onClick={() => onTabChange(item.id)}
                                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                                         activeTab === item.id 
                                         ? 'bg-indigo-100 text-indigo-700' 
@@ -448,11 +451,11 @@ t.done()`,
             </nav>
         );
 
-        // Increased z-index for Hero to ensure squares go behind
+        // --- HERO (Rounded Bottom) ---
         const Hero = () => (
-            <div className="relative z-10 bg-indigo-700/95 text-white py-12 px-4 mb-8 shadow-xl backdrop-blur-sm">
+            <div className="relative z-10 bg-indigo-700/95 text-white py-12 px-4 mb-8 shadow-xl backdrop-blur-sm rounded-b-[2.5rem]">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-md">Систематизация методов решения Задания 6 ЕГЭ</h1>
+                    <h1 className="text-3xl md:text-5xl font-heading font-extrabold mb-4 drop-shadow-md">Систематизация методов решения Задания 6 ЕГЭ</h1>
                     <p className="text-indigo-100 text-lg mb-6">Справочник по визуальным методам: Кумир, Python и ручной счет</p>
                     <div className="inline-flex items-center bg-indigo-800/80 rounded-full px-4 py-1 text-sm shadow-sm">
                         <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
@@ -614,16 +617,82 @@ t.done()`;
             );
         };
 
-        // --- IMPROVED SOLUTION MODAL ---
+        const TheorySection = () => (
+            <div className="max-w-6xl mx-auto px-4 animate-fade-in">
+                <div className="grid md:grid-cols-3 gap-6 mb-12">
+                    {theoryData.map((item) => (
+                        <div key={item.id} className="bg-white/95 backdrop-blur rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-indigo-500">
+                            <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
+                            <p className="text-gray-600 mb-4 text-sm min-h-[40px]">{item.desc}</p>
+                            
+                            <div className="space-y-3">
+                                <div>
+                                    <h4 className="text-xs font-bold uppercase text-green-600 tracking-wider mb-1">Плюсы:</h4>
+                                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
+                                        {item.pros.map((p, i) => <li key={i}>{p}</li>)}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold uppercase text-red-600 tracking-wider mb-1">Минусы:</h4>
+                                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
+                                        {item.cons.map((c, i) => <li key={i}>{c}</li>)}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg overflow-hidden mb-12">
+                    <div className="bg-gray-800 px-6 py-4">
+                        <h3 className="text-white font-bold text-lg">Сравнительный анализ</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left text-gray-600">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th className="px-6 py-3">Критерий</th>
+                                    <th className="px-6 py-3">Графический</th>
+                                    <th className="px-6 py-3">Кумир</th>
+                                    <th className="px-6 py-3">Python (Визуал)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="bg-white border-b hover:bg-gray-50">
+                                    <td className="px-6 py-4 font-medium text-gray-900">Принцип</td>
+                                    <td className="px-6 py-4">Рисунок на бумаге</td>
+                                    <td className="px-6 py-4">Рисунок программы</td>
+                                    <td className="px-6 py-4">Рисунок программы</td>
+                                </tr>
+                                <tr className="bg-white border-b hover:bg-gray-50">
+                                    <td className="px-6 py-4 font-medium text-gray-900">Подсчет точек</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную</td>
+                                </tr>
+                                <tr className="bg-white hover:bg-gray-50">
+                                    <td className="px-6 py-4 font-medium text-gray-900">Сложные углы</td>
+                                    <td className="px-6 py-4 text-red-500">Плохо</td>
+                                    <td className="px-6 py-4 text-green-600">Отлично</td>
+                                    <td className="px-6 py-4 text-green-600">Отлично</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+
         const SolutionModal = ({ isOpen, onClose, taskData }) => {
             const [activeSolTab, setActiveSolTab] = useState('kumir');
             
             if (!isOpen || !taskData) return null;
 
-            return (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop p-4 animate-modal-in">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh]">
-                        {/* Header - Fixed */}
+            return ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+                    <div className="absolute inset-0 modal-backdrop animate-fade-in" onClick={onClose}></div>
+                    
+                    <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-scale-in">
                         <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
                             <h3 className="text-xl font-bold text-gray-800">Решение: {taskData.title}</h3>
                             <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition">
@@ -631,7 +700,6 @@ t.done()`;
                             </button>
                         </div>
                         
-                        {/* Tabs - Fixed */}
                         <div className="flex border-b px-6 bg-gray-50 flex-shrink-0">
                             {[
                                 { id: 'manual', label: 'Ручное рассуждение' },
@@ -652,7 +720,6 @@ t.done()`;
                             ))}
                         </div>
 
-                        {/* Content - Scrollable */}
                         <div className="overflow-y-auto p-6 flex-grow">
                             {activeSolTab === 'manual' && (
                                 <div className="space-y-4">
@@ -682,12 +749,12 @@ t.done()`;
                             )}
                         </div>
                         
-                        {/* Footer - Fixed */}
                         <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end flex-shrink-0">
                             <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition">Закрыть</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             );
         };
 
@@ -761,16 +828,16 @@ t.done()`;
                                     <div className="mt-4 flex gap-3">
                                         <button 
                                             onClick={() => setShowAnswer({ ...showAnswer, [ex.id]: !showAnswer[ex.id] })}
-                                            className="text-sm text-gray-500 hover:text-gray-800 flex items-center"
+                                            className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-2"
                                         >
-                                            <IconEye className="w-4 h-4 mr-1"/> 
+                                            <IconEye className="w-4 h-4"/> 
                                             {showAnswer[ex.id] ? `Ответ: ${ex.correctAnswer}` : 'Показать ответ'}
                                         </button>
                                         <button 
                                             onClick={() => openSolution(ex)}
-                                            className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center font-medium"
+                                            className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center font-medium gap-2"
                                         >
-                                            <IconHelp className="w-4 h-4 mr-1"/> Показать решение
+                                            <IconHelp className="w-4 h-4"/> Показать решение
                                         </button>
                                     </div>
                                 </div>
@@ -781,79 +848,13 @@ t.done()`;
             );
         };
 
-        const TheorySection = () => (
-            <div className="max-w-6xl mx-auto px-4 animate-fade-in">
-                <div className="grid md:grid-cols-3 gap-6 mb-12">
-                    {theoryData.map((item) => (
-                        <div key={item.id} className="bg-white/95 backdrop-blur rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-indigo-500">
-                            <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
-                            <p className="text-gray-600 mb-4 text-sm min-h-[40px]">{item.desc}</p>
-                            
-                            <div className="space-y-3">
-                                <div>
-                                    <h4 className="text-xs font-bold uppercase text-green-600 tracking-wider mb-1">Плюсы:</h4>
-                                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
-                                        {item.pros.map((p, i) => <li key={i}>{p}</li>)}
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 className="text-xs font-bold uppercase text-red-600 tracking-wider mb-1">Минусы:</h4>
-                                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
-                                        {item.cons.map((c, i) => <li key={i}>{c}</li>)}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg overflow-hidden mb-12">
-                    <div className="bg-gray-800 px-6 py-4">
-                        <h3 className="text-white font-bold text-lg">Сравнительный анализ</h3>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-600">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
-                                <tr>
-                                    <th className="px-6 py-3">Критерий</th>
-                                    <th className="px-6 py-3">Графический</th>
-                                    <th className="px-6 py-3">Кумир</th>
-                                    <th className="px-6 py-3">Python (Визуал)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Принцип</td>
-                                    <td className="px-6 py-4">Рисунок на бумаге</td>
-                                    <td className="px-6 py-4">Рисунок программы</td>
-                                    <td className="px-6 py-4">Рисунок программы</td>
-                                </tr>
-                                <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Подсчет точек</td>
-                                    <td className="px-6 py-4 text-yellow-600">Вручную</td>
-                                    <td className="px-6 py-4 text-yellow-600">Вручную (глазами)</td>
-                                    <td className="px-6 py-4 text-yellow-600">Вручную (глазами)</td>
-                                </tr>
-                                <tr className="bg-white hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Сложные углы</td>
-                                    <td className="px-6 py-4 text-red-500">Плохо</td>
-                                    <td className="px-6 py-4 text-green-600">Отлично</td>
-                                    <td className="px-6 py-4 text-green-600">Отлично</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        );
-
-        // --- IMPROVED ANSWERS MODAL ---
         const AnswersModal = ({ isOpen, onClose, data }) => {
             if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop p-4 animate-modal-in">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-                        {/* Header */}
+            return ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+                    <div className="absolute inset-0 modal-backdrop animate-fade-in" onClick={onClose}></div>
+                    
+                    <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-scale-in">
                         <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
                             <h3 className="text-xl font-bold text-gray-800">Правильные ответы</h3>
                             <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition">
@@ -861,7 +862,6 @@ t.done()`;
                             </button>
                         </div>
                         
-                        {/* Scrollable Content */}
                         <div className="overflow-y-auto p-6 space-y-6 flex-grow">
                             {data.map((q, idx) => (
                                 <div key={idx} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
@@ -880,12 +880,12 @@ t.done()`;
                             ))}
                         </div>
                         
-                        {/* Footer */}
                         <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end flex-shrink-0">
                             <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition">Закрыть</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             );
         };
 
@@ -1147,21 +1147,61 @@ t.done()`;
             );
         };
 
-        const Footer = () => (
-             <footer className="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm relative z-10">
+        const Footer = ({ onEasterEggClick }) => (
+             <footer className="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm relative z-10 rounded-t-[2.5rem]">
                 <p>Разработано в рамках школьного индивидуального проекта</p>
-                <p>2026</p>
+                <p onClick={onEasterEggClick} className="cursor-default hover:text-gray-300 transition-colors">2026</p>
             </footer>
         );
 
+        // --- EASTER EGG MODAL ---
+        const EasterEggModal = ({ onClose }) => {
+            useEffect(() => {
+                const script = document.createElement('script');
+                script.src = "https://tenor.com/embed.js";
+                script.async = true;
+                document.body.appendChild(script);
+                return () => {
+                    document.body.removeChild(script);
+                };
+            }, []);
+
+            return ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[10000] bg-black flex items-center justify-center cursor-pointer" onClick={onClose}>
+                    <div className="w-full h-full flex items-center justify-center">
+                         <div className="tenor-gif-embed" data-postid="16802068312873307417" data-share-method="host" data-aspect-ratio="1" data-width="100%">
+                            <a href="https://tenor.com/view/turtle-gif-16802068312873307417">Turtle Sticker</a>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            );
+        };
+
         const App = () => {
             const [activeTab, setActiveTab] = useState('theory');
+            const [tabHistory, setTabHistory] = useState([]);
+            const [showEasterEgg, setShowEasterEgg] = useState(false);
+
             useEffect(() => { lucide.createIcons(); }, [activeTab]);
+
+            // Track tab clicks for Easter Egg
+            const handleTabChange = (id) => {
+                setActiveTab(id);
+                setTabHistory(prev => [...prev, id].slice(-5)); // Keep only last 5
+            };
+
+            const checkEasterEgg = () => {
+                const requiredSequence = ['detailed', 'quiz', 'detailed', 'theory', 'examples'];
+                if (JSON.stringify(tabHistory) === JSON.stringify(requiredSequence)) {
+                    setShowEasterEgg(true);
+                }
+            };
 
             return (
                 <div className="min-h-screen flex flex-col relative">
                     <BackgroundEffect />
-                    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
                     <Hero />
                     <main className="flex-grow z-10">
                         {activeTab === 'theory' && <TheorySection />}
@@ -1170,7 +1210,8 @@ t.done()`;
                         {activeTab === 'quiz' && <QuizSection />}
                         {activeTab === 'simulation' && <SimulatorSection />}
                     </main>
-                    <Footer />
+                    <Footer onEasterEggClick={checkEasterEgg} />
+                    {showEasterEgg && <EasterEggModal onClose={() => setShowEasterEgg(false)} />}
                 </div>
             );
         };
