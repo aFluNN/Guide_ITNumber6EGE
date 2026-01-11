@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЕГЭ Информатика: Задание 6 - Систематизация методов</title>
+    <title>ЕГЭ Информатика: Задание 6 - Методы (Кумир и Python)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -88,51 +88,50 @@
                 usage: 'Для простых задач с малыми значениями и прямыми углами.'
             },
             {
-                id: 'analytic',
-                title: 'Аналитический (Геометрический)',
-                desc: 'Использование формул геометрии и Теоремы Пика.',
-                formula: 'S = В + Г/2 - 1',
-                pros: ['Абсолютная точность', 'Работает с огромными числами', 'Развивает мат. мышление'],
-                cons: ['Сложность вычислений', 'Проблема самопересечений', 'Требует знаний тригонометрии'],
-                usage: 'Когда числа очень большие (например, "Вперед 10000").'
+                id: 'kumir',
+                title: 'Среда КУМИР',
+                desc: 'Использование учебного исполнителя "Черепаха" с русским синтаксисом.',
+                pros: ['Русский понятный синтаксис', 'Встроенная сетка и линейка', 'Визуализация процесса'],
+                cons: ['Нужно настраивать сетку (1 клетка = 1 ед)', 'Неудобно при огромных координатах', 'Ручной подсчет точек'],
+                usage: 'Идеален для проверки и визуального подсчета точек.'
             },
             {
                 id: 'program',
                 title: 'Программный (Python)',
                 desc: 'Основной метод для КЕГЭ. Делится на визуальный и автоматический.',
                 pros: ['Высокая скорость', 'Универсальность', 'Надежность (при авто-подсчете)'],
-                cons: ['Требует навыков программирования', 'Визуальный метод неудобен при масштабе'],
+                cons: ['Требует навыков программирования', 'Синтаксис сложнее, чем в Кумире'],
                 usage: 'Рекомендуется как основной метод решения.'
             }
         ];
 
         const quizData = [
             {
-                question: "В условии задачи сказано: 'Вперед 1000, Направо 90'. Какой метод наиболее эффективен?",
+                question: "В условии задачи сказано: 'Вперед 1000, Направо 90'. Какой метод здесь НЕ подойдет?",
                 options: [
-                    { text: "Рисовать на бумаге (Графический)", correct: false },
-                    { text: "Аналитический (формулы)", correct: true },
-                    { text: "Визуальный подсчет точек на экране", correct: false }
+                    { text: "Python (turtle/аналитика)", correct: false },
+                    { text: "Графический (на бумаге)", correct: true },
+                    { text: "Кумир (при правильном масштабе)", correct: false }
                 ],
-                explanation: "Для огромных чисел рисовать или считать точки визуально невозможно. Аналитический метод или формула Пика здесь идеальны."
+                explanation: "Рисовать линию длиной 1000 клеток на бумаге невозможно. Программы справятся лучше."
             },
             {
-                question: "Фигура получается сложная, с поворотами на 45 и 60 градусов, числа небольшие (до 20).",
+                question: "Какая команда в Кумире опускает перо, чтобы Черепаха начала оставлять след?",
                 options: [
-                    { text: "Аналитический", correct: false },
-                    { text: "Программный (Python/Кумир)", correct: true },
-                    { text: "Угадать", correct: false }
+                    { text: "pd()", correct: false },
+                    { text: "опустить хвост", correct: true },
+                    { text: "рисовать", correct: false }
                 ],
-                explanation: "Сложные углы трудно рассчитать аналитически без ошибок. Программа построит фигуру точно."
+                explanation: "В системе Кумир используется русская команда 'опустить хвост'."
             },
             {
-                question: "Для чего нужна Теорема Пика?",
+                question: "Что нужно обязательно настроить в Кумире перед подсчетом точек?",
                 options: [
-                    { text: "Для расчета длины линии", correct: false },
-                    { text: "Для связи площади и кол-ва точек", correct: true },
-                    { text: "Для поворота Черепахи", correct: false }
+                    { text: "Цвет линий", correct: false },
+                    { text: "Сетку (1 клетка = 1 единица)", correct: true },
+                    { text: "Скорость анимации", correct: false }
                 ],
-                explanation: "S = В + Г/2 - 1. Теорема связывает площадь многоугольника с количеством целочисленных точек."
+                explanation: "По умолчанию сетка в Кумире может быть произвольного масштаба. Нужно выставить масштаб 1:1."
             },
             {
                 question: "Какая библиотека обычно используется в Python для решения 6 задания?",
@@ -144,7 +143,7 @@
                 explanation: "Библиотека turtle (Черепаха) является стандартом для таких задач."
             },
             {
-                question: "Что делает команда tracer(0) в библиотеке turtle?",
+                question: "Что делает команда tracer(0) в библиотеке Python turtle?",
                 options: [
                     { text: "Замедляет рисование", correct: false },
                     { text: "Отключает анимацию (мгновенная отрисовка)", correct: true },
@@ -153,7 +152,7 @@
                 explanation: "tracer(0) отключает анимацию, что позволяет мгновенно получить результат сложного построения."
             },
             {
-                question: "Для чего нужен коэффициент масштабирования (k) при программном решении?",
+                question: "Для чего нужен коэффициент масштабирования (k) при решении на Python?",
                 options: [
                     { text: "Чтобы фигура была видна на экране", correct: true },
                     { text: "Чтобы ускорить работу программы", correct: false },
@@ -162,7 +161,7 @@
                 explanation: "1 пиксель слишком мал. Мы умножаем координаты на k (например, 20-30), чтобы фигура была различима."
             },
             {
-                question: "Какую команду нужно выполнить, чтобы Черепаха переместилась, не оставляя след?",
+                question: "Какую команду нужно выполнить, чтобы Черепаха переместилась, не оставляя след (Python)?",
                 options: [
                     { text: "pd() / down()", correct: false },
                     { text: "pu() / up()", correct: true },
@@ -180,13 +179,13 @@
                 explanation: "Это точки пересечения линий сетки, где X и Y - целые числа."
             },
             {
-                question: "Как в Python записать цикл «Повтори 5 раз»?",
+                question: "Как в Кумире записать цикл «Повтори 5 раз»?",
                 options: [
-                    { text: "repeat 5:", correct: false },
-                    { text: "loop(5):", correct: false },
-                    { text: "for i in range(5):", correct: true }
+                    { text: "нц 5 раз ... кц", correct: true },
+                    { text: "for i in range(5):", correct: false },
+                    { text: "repeat 5:", correct: false }
                 ],
-                explanation: "Стандартный цикл в Python: for i in range(N)."
+                explanation: "Синтаксис Кумира: нц (начало цикла) <кол-во> раз ... кц (конец цикла)."
             },
             {
                 question: "В какую сторону изначально смотрит Черепаха в стандартной библиотеке Python turtle?",
@@ -195,7 +194,7 @@
                     { text: "Вправо (Восток)", correct: true },
                     { text: "Вниз (Юг)", correct: false }
                 ],
-                explanation: "По умолчанию в turtle 0 градусов - это направление вправо (Восток). В Кумире часто вверх."
+                explanation: "По умолчанию в turtle 0 градусов - это направление вправо (Восток)."
             },
             {
                 question: "Если Черепаха смотрит вверх (90 градусов) и выполняется команда right(90), куда она будет смотреть?",
@@ -207,7 +206,7 @@
                 explanation: "Поворот на 90 градусов по часовой стрелке от направления 'Вверх' приведет к направлению 'Вправо'."
             },
             {
-                question: "Какой недостаток у метода визуального подсчета точек с экрана?",
+                question: "Какой основной недостаток метода визуального подсчета (и в Кумире, и в Python)?",
                 options: [
                     { text: "Нужен мощный компьютер", correct: false },
                     { text: "Сложный код", correct: false },
@@ -216,13 +215,13 @@
                 explanation: "Можно легко пропустить точку или неверно оценить граничную точку при большом их количестве."
             },
             {
-                question: "Если фигура незамкнутая, можно ли посчитать площадь методом Пика?",
+                question: "Какая команда подключает исполнителя Черепаха в Кумире?",
                 options: [
-                    { text: "Да", correct: false },
-                    { text: "Нет", correct: true },
-                    { text: "Только если она выпуклая", correct: false }
+                    { text: "import turtle", correct: false },
+                    { text: "использовать Черепаха", correct: true },
+                    { text: "использовать Робот", correct: false }
                 ],
-                explanation: "Теорема Пика применяется только к замкнутым многоугольникам."
+                explanation: "Стандартная команда вставки исполнителя: 'использовать Черепаха'."
             },
             {
                 question: "Какой алгоритм используется для автоматической проверки попадания точки в многоугольник?",
@@ -284,7 +283,7 @@
             <div className="bg-indigo-700 text-white py-12 px-4 mb-8">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-3xl md:text-5xl font-bold mb-4">Систематизация методов решения Задания 6 ЕГЭ</h1>
-                    <p className="text-indigo-200 text-lg mb-6">Интерактивный справочник и тренажер для исполнителя «Черепаха»</p>
+                    <p className="text-indigo-200 text-lg mb-6">Справочник и тренажер: Кумир, Python и ручной счет</p>
                     <div className="inline-flex items-center bg-indigo-800 rounded-full px-4 py-1 text-sm">
                         <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                         Автор: Лебедев Андрей, 10А
@@ -330,6 +329,21 @@ t.done()`;
                 setTimeout(() => setCopyStatus(false), 2000);
             };
 
+            const copyKumir = () => {
+                const code = `использовать Черепаха
+алг
+нач
+  опустить хвост
+  нц 4 раз
+    вперед(10)
+    вправо(90)
+  кц
+кон`;
+                navigator.clipboard.writeText(code);
+                setCopyStatus(true);
+                setTimeout(() => setCopyStatus(false), 2000);
+            };
+
             return (
                 <div className="max-w-5xl mx-auto px-4 animate-fade-in pb-12">
                     <div className="text-center mb-8">
@@ -337,8 +351,8 @@ t.done()`;
                         <div className="inline-flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
                             {[
                                 { id: 'graphic', label: 'Графический' },
-                                { id: 'analytic', label: 'Аналитический' },
-                                { id: 'program', label: 'Программный' }
+                                { id: 'kumir', label: 'Кумир' },
+                                { id: 'program', label: 'Python' }
                             ].map((m) => (
                                 <button
                                     key={m.id}
@@ -387,35 +401,53 @@ t.done()`;
                             </div>
                         )}
 
-                        {method === 'analytic' && (
+                        {method === 'kumir' && (
                             <div className="space-y-6 animate-fade-in">
-                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Аналитический метод</h3>
+                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Среда КУМИР (Исполнитель Черепаха)</h3>
                                 <p className="text-gray-600">
-                                    Перевод задачи с языка алгоритмики на язык геометрии. Требует знания математических формул.
+                                    Кумир — система программирования, предназначенная для обучения. Исполнитель «Черепаха» позволяет визуально построить фигуру и посчитать точки, используя встроенную сетку.
                                 </p>
 
                                 <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
                                     <h4 className="font-bold text-indigo-800 mb-2">Алгоритм действий:</h4>
                                     <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                                        <li>Проанализируйте алгоритм, чтобы понять форму фигуры (квадрат, прямоугольник, треугольник).</li>
-                                        <li>Найдите координаты всех вершин фигуры. Для наклонных линий используйте синус и косинус.</li>
-                                        <li>Используйте <strong>Теорему Пика</strong> для подсчета точек.</li>
+                                        <li>Запустите среду Кумир и выберите меню <strong>«Вставка» -> «Использовать Черепаха»</strong>.</li>
+                                        <li>Напишите алгоритм, используя русские команды (<code>вперед</code>, <code>вправо</code>, <code>нц/кц</code>).</li>
+                                        <li>Не забудьте команду <code>опустить хвост</code> в начале рисования.</li>
+                                        <li>Запустите программу (F9).</li>
+                                        <li><strong>Важно:</strong> Настройте сетку. Колесиком мыши приблизьте рисунок так, чтобы шаг сетки был равен 1.</li>
+                                        <li>Посчитайте точки (пересечения линий сетки) внутри фигуры визуально.</li>
                                     </ol>
                                 </div>
 
-                                <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                                    <h4 className="font-bold text-gray-800 text-center mb-4">Формула Пика</h4>
-                                    <div className="flex justify-center items-center space-x-4 mb-4">
-                                        <div className="text-2xl font-serif italic bg-gray-100 px-4 py-2 rounded">S = В + <span className="frac"><sup>Г</sup><span>&frasl;</span><sub>2</sub></span> - 1</div>
+                                <div className="relative">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h4 className="font-bold text-gray-700">Пример кода (Кумир):</h4>
+                                        <button 
+                                            onClick={copyKumir}
+                                            className="flex items-center text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded transition"
+                                        >
+                                            <IconCopy className="mr-1"/> {copyStatus ? 'Скопировано!' : 'Копировать'}
+                                        </button>
                                     </div>
-                                    <p className="text-center text-gray-600 text-sm mb-4">Выражаем <strong>В</strong> (внутренние точки):</p>
-                                    <div className="flex justify-center items-center">
-                                        <div className="text-2xl font-serif font-bold text-indigo-600">В = S - <span className="frac"><sup>Г</sup><span>&frasl;</span><sub>2</sub></span> + 1</div>
-                                    </div>
-                                    <div className="mt-4 text-sm text-gray-500 grid grid-cols-2 gap-4">
-                                        <div><strong>S</strong> — Площадь фигуры (геометрически)</div>
-                                        <div><strong>Г</strong> — Точки на границе</div>
-                                    </div>
+                                    <pre className="bg-gray-800 text-yellow-300 p-4 rounded-xl overflow-x-auto text-sm font-mono leading-relaxed shadow-inner">
+{`использовать Черепаха
+алг
+нач
+  опустить хвост
+  
+  | Пример цикла: Повтори 4 раза
+  нц 4 раз
+    вперед(10)
+    вправо(90)
+  кц
+  
+  поднять хвост
+кон`}
+                                    </pre>
+                                </div>
+                                <div className="text-sm text-gray-500 italic mt-2">
+                                    * В Кумире ось Y направлена вверх, а 0 градусов обычно смотрит вправо (зависит от настроек, но чаще совпадает с мат. координатами).
                                 </div>
                             </div>
                         )}
@@ -530,33 +562,33 @@ t.done()`}
                                 <tr>
                                     <th className="px-6 py-3">Критерий</th>
                                     <th className="px-6 py-3">Графический</th>
-                                    <th className="px-6 py-3">Аналитический</th>
-                                    <th className="px-6 py-3">Программный</th>
+                                    <th className="px-6 py-3">Кумир</th>
+                                    <th className="px-6 py-3">Python</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr className="bg-white border-b hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">Инструменты</td>
                                     <td className="px-6 py-4">Бумага, карандаш</td>
-                                    <td className="px-6 py-4">Формулы</td>
+                                    <td className="px-6 py-4">Среда Кумир</td>
                                     <td className="px-6 py-4">Python + Turtle</td>
                                 </tr>
                                 <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Точность</td>
-                                    <td className="px-6 py-4 text-red-500">Низкая</td>
-                                    <td className="px-6 py-4 text-green-600">Высокая</td>
-                                    <td className="px-6 py-4 text-green-600">Абсолютная</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">Сложность освоения</td>
+                                    <td className="px-6 py-4 text-green-600">Очень низкая</td>
+                                    <td className="px-6 py-4 text-green-600">Низкая (РУС)</td>
+                                    <td className="px-6 py-4 text-yellow-600">Средняя (ENG)</td>
                                 </tr>
                                 <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Большие числа</td>
-                                    <td className="px-6 py-4 text-red-500">Нет</td>
-                                    <td className="px-6 py-4 text-green-600">Да</td>
-                                    <td className="px-6 py-4 text-green-600">Да</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">Наглядность</td>
+                                    <td className="px-6 py-4 text-yellow-600">Средняя</td>
+                                    <td className="px-6 py-4 text-green-600">Высокая</td>
+                                    <td className="px-6 py-4 text-green-600">Высокая</td>
                                 </tr>
                                 <tr className="bg-white hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">Сложные углы</td>
                                     <td className="px-6 py-4 text-red-500">Плохо</td>
-                                    <td className="px-6 py-4 text-yellow-600">Сложно</td>
+                                    <td className="px-6 py-4 text-green-600">Отлично</td>
                                     <td className="px-6 py-4 text-green-600">Отлично</td>
                                 </tr>
                             </tbody>
