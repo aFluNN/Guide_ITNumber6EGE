@@ -25,6 +25,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
+            overflow-x: hidden; /* Prevent horizontal scroll from background elements */
         }
 
         .font-mono {
@@ -65,6 +66,37 @@
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out forwards;
         }
+
+        /* --- BACKGROUND ANIMATION --- */
+        .background-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(99, 102, 241, 0.08); /* Indigo with low opacity */
+            border-radius: 20%;
+            animation: float 25s infinite linear;
+        }
+
+        .shape:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-duration: 30s; }
+        .shape:nth-child(2) { width: 120px; height: 120px; top: 70%; left: 80%; animation-duration: 40s; animation-delay: -5s; }
+        .shape:nth-child(3) { width: 50px; height: 50px; top: 40%; left: 40%; animation-duration: 25s; animation-delay: -10s; background: rgba(16, 185, 129, 0.08); }
+        .shape:nth-child(4) { width: 150px; height: 150px; top: 80%; left: 20%; animation-duration: 45s; animation-delay: -15s; }
+        .shape:nth-child(5) { width: 60px; height: 60px; top: 20%; left: 90%; animation-duration: 35s; background: rgba(239, 68, 68, 0.08); }
+        .shape:nth-child(6) { width: 100px; height: 100px; top: 50%; left: 5%; animation-duration: 38s; }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -78,7 +110,6 @@
         const IconCode = () => <i data-lucide="terminal" className="w-5 h-5"></i>;
         const IconCheck = () => <i data-lucide="check-circle" className="w-5 h-5"></i>;
         const IconPlay = () => <i data-lucide="play" className="w-5 h-5"></i>;
-        const IconGrid = () => <i data-lucide="grid" className="w-5 h-5"></i>;
         const IconAward = () => <i data-lucide="award" className="w-5 h-5"></i>;
         const IconX = () => <i data-lucide="x" className="w-5 h-5"></i>;
         const IconList = () => <i data-lucide="list" className="w-5 h-5"></i>;
@@ -86,6 +117,18 @@
         const IconCopy = () => <i data-lucide="copy" className="w-4 h-4"></i>;
         const IconEye = () => <i data-lucide="eye" className="w-5 h-5"></i>;
         const IconHelp = () => <i data-lucide="help-circle" className="w-5 h-5"></i>;
+
+        // --- BACKGROUND COMPONENT ---
+        const BackgroundEffect = () => (
+            <div className="background-shapes">
+                <div className="shape"></div>
+                <div className="shape"></div>
+                <div className="shape"></div>
+                <div className="shape"></div>
+                <div className="shape"></div>
+                <div className="shape"></div>
+            </div>
+        );
 
         // --- DATA ---
         const theoryData = [
@@ -120,13 +163,8 @@
                 id: 1,
                 title: "Демоверсия 2021 (Классика)",
                 task: "Исполнитель Черепаха действует на плоскости с декартовой системой координат. В начальный момент Черепаха находится в начале координат, её голова направлена вдоль положительного направления оси ординат, хвост опущен. При опущенном хвосте Черепаха оставляет на поле след в виде линии. В каждый конкретный момент известно положение исполнителя и направление его движения. У исполнителя существует две команды: Вперёд n (где n – целое число), вызывающая передвижение Черепахи на n единиц в том направлении, куда указывает её голова, и Направо m (где m – целое число), вызывающая изменение направления движения на m градусов по часовой стрелке. Запись Повтори k [Команда1 Команда2 … КомандаS] означает, что последовательность из S команд повторится k раз. Черепахе был дан для исполнения следующий алгоритм: Повтори 7 [Вперёд 10 Направо 120]. Определите, сколько точек с целочисленными координатами будут находиться внутри области, ограниченной линией, заданной данным алгоритмом. Точки на линии учитывать не следует.",
-                answer: "38", // Примерный ответ для треугольника со стороной 10 (S ~ 43.3) -> точек ~38-40. Уточним: Треугольник равносторонний сторона 10.
-                // Точный подсчет для треугольника сторона 10:
-                // Вершины (0,0), (0, 10), (8.66, 5) - если поворот направо 120 (внутр угол 60). 
-                // Для демо 2021 там был прямоугольник. Давайте возьмем задачу попроще для примера, чтобы точно 100% сошлось с кодом ниже.
-                // Пусть будет Прямоугольник 6 на 10.
                 overrideTask: "Черепахе был дан для исполнения следующий алгоритм: Повтори 2 [Вперёд 6 Направо 90 Вперёд 10 Направо 90]. Определите, сколько точек с целочисленными координатами будут находиться внутри области (не включая границы).",
-                correctAnswer: "45", // (6-1)*(10-1) = 5*9 = 45
+                correctAnswer: "45",
                 kumirCode: `использовать Черепаха
 алг
 нач
@@ -161,7 +199,7 @@ t.done()`,
                 id: 2,
                 title: "Задача на треугольник",
                 task: "Алгоритм: Повтори 3 [Вперёд 7 Направо 120]. Определите, сколько точек с целочисленными координатами будут находиться внутри области, ограниченной линией, заданной данным алгоритмом. Точки на линии учитывать не следует.",
-                correctAnswer: "17", // Примерно для стороны 7.
+                correctAnswer: "17", 
                 kumirCode: `использовать Черепаха
 алг
 нач
@@ -192,10 +230,8 @@ t.done()`,
                 id: 3,
                 title: "L-образная фигура (Демо 2023 тип)",
                 task: "Алгоритм: Вперёд 10 Направо 90 Вперёд 10 Направо 270 Вперёд 4 Направо 90 Вперёд 14 Направо 90. Определите количество точек внутри фигуры (границы не учитываются).",
-                correctAnswer: "91", // 10*14 - вырез (10-4)*(14-10) -> 140 - 6*4 = 116? Нет, давайте проще, чтобы легко считалось.
-                // Давайте возьмем задачу: Квадрат 10x10.
                 overrideTask: "Алгоритм: Повтори 4 [Вперёд 8 Направо 90]. Определите количество точек внутри фигуры (не включая границы).",
-                correctAnswer: "49", // 7*7
+                correctAnswer: "49",
                 kumirCode: `использовать Черепаха
 алг
 нач
@@ -338,7 +374,7 @@ t.done()`,
         // --- COMPONENTS ---
 
         const Navigation = ({ activeTab, setActiveTab }) => (
-            <nav className="bg-white shadow-md sticky top-0 z-50">
+            <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
@@ -373,11 +409,11 @@ t.done()`,
         );
 
         const Hero = () => (
-            <div className="bg-indigo-700 text-white py-12 px-4 mb-8">
+            <div className="bg-indigo-700/90 text-white py-12 px-4 mb-8 backdrop-blur-sm shadow-xl">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-4">Систематизация методов решения Задания 6 ЕГЭ</h1>
-                    <p className="text-indigo-200 text-lg mb-6">Справочник по визуальным методам: Кумир, Python и ручной счет</p>
-                    <div className="inline-flex items-center bg-indigo-800 rounded-full px-4 py-1 text-sm">
+                    <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-md">Систематизация методов решения Задания 6 ЕГЭ</h1>
+                    <p className="text-indigo-100 text-lg mb-6">Справочник по визуальным методам: Кумир, Python и ручной счет</p>
+                    <div className="inline-flex items-center bg-indigo-800/80 rounded-full px-4 py-1 text-sm shadow-sm">
                         <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                         Автор: Лебедев Андрей, 10А
                     </div>
@@ -441,7 +477,7 @@ t.done()`;
                 <div className="max-w-5xl mx-auto px-4 animate-fade-in pb-12">
                     <div className="text-center mb-8">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Подробный разбор методов</h2>
-                        <div className="inline-flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
+                        <div className="inline-flex bg-white/90 rounded-lg shadow-sm p-1 border border-gray-200">
                             {[
                                 { id: 'graphic', label: 'Графический' },
                                 { id: 'kumir', label: 'Кумир' },
@@ -462,7 +498,7 @@ t.done()`;
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg p-6 md:p-8">
                         {method === 'graphic' && (
                             <div className="space-y-6 animate-fade-in">
                                 <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Графический (Ручной) метод</h3>
@@ -641,8 +677,8 @@ t.done()`;
                     <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Примеры задач из ЕГЭ</h2>
                     <div className="space-y-8">
                         {examplesData.map((ex) => (
-                            <div key={ex.id} className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                                <div className="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex justify-between items-center">
+                            <div key={ex.id} className="bg-white/95 backdrop-blur rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                                <div className="bg-indigo-50/80 px-6 py-4 border-b border-indigo-100 flex justify-between items-center">
                                     <h3 className="font-bold text-indigo-800">{ex.title}</h3>
                                     <span className="text-xs bg-white text-indigo-600 px-2 py-1 rounded border border-indigo-200">Задание 6</span>
                                 </div>
@@ -703,7 +739,7 @@ t.done()`;
             <div className="max-w-6xl mx-auto px-4 animate-fade-in">
                 <div className="grid md:grid-cols-3 gap-6 mb-12">
                     {theoryData.map((item) => (
-                        <div key={item.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-indigo-500">
+                        <div key={item.id} className="bg-white/95 backdrop-blur rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-indigo-500">
                             <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
                             <p className="text-gray-600 mb-4 text-sm min-h-[40px]">{item.desc}</p>
                             
@@ -725,7 +761,7 @@ t.done()`;
                     ))}
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
+                <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg overflow-hidden mb-12">
                     <div className="bg-gray-800 px-6 py-4">
                         <h3 className="text-white font-bold text-lg">Сравнительный анализ</h3>
                     </div>
@@ -853,7 +889,7 @@ t.done()`;
             const q = quizData[currentQuestion];
             return (
                 <div className="max-w-2xl mx-auto px-4 mt-8">
-                    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg p-6 md:p-8">
                         <div className="flex justify-between items-center mb-6">
                             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Вопрос {currentQuestion + 1} / {quizData.length}</span>
                         </div>
@@ -890,7 +926,8 @@ t.done()`;
             const canvasRef = useRef(null);
             const [code, setCode] = useState("Повтори 4 [\n  Вперед 10\n  Направо 90\n]");
             const [scale, setScale] = useState(20);
-            const [resultText, setResultText] = useState("Нажмите 'Запустить' для отрисовки.");
+            const [resultText, setResultText] = useState("Нажмите 'Запустить' для расчета.");
+            const [pointsCount, setPointsCount] = useState(0);
 
             const runSimulation = () => {
                 const canvas = canvasRef.current;
@@ -900,9 +937,18 @@ t.done()`;
                 const centerX = width / 2;
                 const centerY = height / 2;
 
+                // Reset Canvas
                 ctx.clearRect(0, 0, width, height);
                 
-                // Grid
+                // Draw Axis
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, centerY); ctx.lineTo(width, centerY);
+                ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
+                ctx.stroke();
+
+                // Draw Grid
                 ctx.fillStyle = '#cbd5e1';
                 for(let x = 0; x < width; x += scale) {
                     for(let y = 0; y < height; y += scale) {
@@ -910,7 +956,7 @@ t.done()`;
                     }
                 }
 
-                // Parse & Draw
+                // Parse Code
                 let cleanCode = code.toLowerCase().replace(/\s+/g, ' ');
                 const loopMatch = cleanCode.match(/повтори\s+(\d+)\s*\[(.*)\]/);
                 let rawCmds = cleanCode;
@@ -923,7 +969,12 @@ t.done()`;
                 let finalTokens = [];
                 for(let i=0; i<iterations; i++) finalTokens = [...finalTokens, ...tokens];
 
-                let x = 0, y = 0, angle = 90;
+                // Execution & Vertices tracking
+                let x = 0; 
+                let y = 0; 
+                let angle = 90; // Up
+                let vertices = [{x: 0, y: 0}];
+
                 ctx.beginPath();
                 ctx.strokeStyle = '#4f46e5';
                 ctx.lineWidth = 3;
@@ -938,7 +989,9 @@ t.done()`;
                         const rad = angle * Math.PI / 180;
                         x += val * Math.cos(rad);
                         y += val * Math.sin(rad); 
+                        
                         ctx.lineTo(centerX + x * scale, centerY - y * scale);
+                        vertices.push({x, y});
                         i += 2;
                     } else if (cmd.includes('направо') && !isNaN(val)) {
                         angle -= val;
@@ -946,48 +999,104 @@ t.done()`;
                     } else if (cmd.includes('налево') && !isNaN(val)) {
                         angle += val;
                         i += 2;
-                    } else i++;
+                    } else {
+                        i++;
+                    }
                 }
                 ctx.stroke();
                 
-                // Red dots for visual counting simulation
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-                for (let px = -15; px <= 15; px++) {
-                    for (let py = -15; py <= 15; py++) {
-                        ctx.beginPath();
-                        ctx.arc(centerX + px * scale, centerY - py * scale, 3, 0, Math.PI * 2);
-                        ctx.fill();
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(79, 70, 229, 0.1)';
+                ctx.fill();
+
+                // --- Auto Counting Logic (Ray Casting) ---
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                vertices.forEach(v => {
+                    if (v.x < minX) minX = v.x;
+                    if (v.x > maxX) maxX = v.x;
+                    if (v.y < minY) minY = v.y;
+                    if (v.y > maxY) maxY = v.y;
+                });
+
+                const startX = Math.floor(minX);
+                const endX = Math.ceil(maxX);
+                const startY = Math.floor(minY);
+                const endY = Math.ceil(maxY);
+
+                let count = 0;
+
+                const isInside = (px, py) => {
+                    let inside = false;
+                    for (let k = 0, j = vertices.length - 1; k < vertices.length; j = k++) {
+                        const xi = vertices[k].x, yi = vertices[k].y;
+                        const xj = vertices[j].x, yj = vertices[j].y;
+                        
+                        const intersect = ((yi > py) !== (yj > py))
+                            && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+                        if (intersect) inside = !inside;
+                    }
+                    return inside;
+                };
+
+                for (let px = startX; px <= endX; px++) {
+                    for (let py = startY; py <= endY; py++) {
+                         if (isInside(px, py)) {
+                             count++;
+                             ctx.fillStyle = 'red';
+                             ctx.beginPath();
+                             ctx.arc(centerX + px * scale, centerY - py * scale, 3, 0, Math.PI * 2); 
+                             ctx.fill();
+                         }
                     }
                 }
 
-                setResultText(`Фигура и сетка построены. В визуальном методе вы должны самостоятельно посчитать красные точки внутри синего контура.`);
+                setPointsCount(count);
+                setResultText(`Калькулятор: фигура построена. Найдено целочисленных точек внутри: ${count}`);
             };
 
             return (
                 <div className="max-w-6xl mx-auto px-4 mt-8 flex flex-col lg:flex-row gap-6 animate-fade-in">
                     <div className="w-full lg:w-1/3 space-y-4">
-                        <div className="bg-white p-6 rounded-xl shadow-lg">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center"><IconCode className="mr-2"/>Код (Псевдокод)</h3>
-                            <textarea value={code} onChange={(e) => setCode(e.target.value)} className="w-full h-40 p-3 bg-gray-900 text-green-400 font-mono text-sm rounded-lg outline-none resize-none"></textarea>
+                        <div className="bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
+                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <IconCode className="mr-2" /> <span>Код (Псевдокод)</span>
+                            </h3>
+                            <textarea 
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                className="w-full h-40 p-3 bg-gray-900 text-green-400 font-mono text-sm rounded-lg border border-gray-300 outline-none resize-none"
+                            ></textarea>
+                            
                             <div className="mt-4 flex gap-2">
-                                <button onClick={runSimulation} className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 font-semibold">Запустить</button>
-                                <input type="number" value={scale} onChange={(e) => setScale(Number(e.target.value))} className="w-16 bg-gray-100 text-center rounded" />
+                                <button onClick={runSimulation} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center font-semibold">
+                                    <IconPlay className="w-4 h-4 mr-2" /> Запустить
+                                </button>
+                                <div className="flex items-center space-x-2 bg-gray-100 px-3 rounded-lg">
+                                    <span className="text-xs text-gray-500">Масштаб:</span>
+                                    <input type="number" value={scale} onChange={(e) => setScale(Number(e.target.value))} className="w-12 bg-transparent text-center font-bold outline-none" min="5" max="50" />
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500 text-sm text-gray-700">
-                            {resultText}
+
+                        <div className="bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                            <h3 className="text-gray-500 uppercase text-xs font-bold mb-1">Результат калькулятора</h3>
+                            <div className="text-2xl font-bold text-gray-800">
+                                {pointsCount} <span className="text-sm font-normal text-gray-500">точек</span>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2">{resultText}</p>
                         </div>
                     </div>
-                    <div className="w-full lg:w-2/3 bg-white rounded-xl shadow-lg p-4 overflow-hidden flex items-center justify-center relative min-h-[500px]">
+
+                    <div className="w-full lg:w-2/3 bg-white/95 backdrop-blur rounded-xl shadow-lg p-4 overflow-hidden flex items-center justify-center relative min-h-[500px]">
                          <canvas ref={canvasRef} width={800} height={600} className="w-full h-full object-contain canvas-grid bg-white"></canvas>
-                         <div className="absolute top-4 right-4 bg-white/80 px-2 py-1 text-xs text-gray-500">Визуализация</div>
+                         <div className="absolute top-4 right-4 bg-white/80 px-2 py-1 rounded text-xs text-gray-500 pointer-events-none">Авто-проверка</div>
                     </div>
                 </div>
             );
         };
 
         const Footer = () => (
-             <footer className="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm">
+             <footer className="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm relative z-10">
                 <p>Разработано в рамках школьного индивидуального проекта</p>
                 <p>2026</p>
             </footer>
@@ -996,11 +1105,13 @@ t.done()`;
         const App = () => {
             const [activeTab, setActiveTab] = useState('theory');
             useEffect(() => { lucide.createIcons(); }, [activeTab]);
+
             return (
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col relative">
+                    <BackgroundEffect />
                     <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
                     <Hero />
-                    <main className="flex-grow">
+                    <main className="flex-grow z-10">
                         {activeTab === 'theory' && <TheorySection />}
                         {activeTab === 'detailed' && <DetailedSection />}
                         {activeTab === 'examples' && <ExamplesSection />}
