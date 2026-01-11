@@ -25,7 +25,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
-            overflow-x: hidden; /* Prevent horizontal scroll from background elements */
+            overflow-x: hidden;
         }
 
         .font-mono {
@@ -54,49 +54,70 @@
             background: #94a3b8; 
         }
         
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+        /* Modal Animation & Style */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6); /* Темнее для контраста */
+            backdrop-filter: blur(8px); /* Сильное размытие всего фона */
         }
 
         @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-modal-in {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+        
+        .animate-fade-in {
+            animation: simpleFade 0.3s ease-out forwards;
+        }
+        @keyframes simpleFade {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
 
-        /* --- BACKGROUND ANIMATION --- */
+        /* --- BACKGROUND ANIMATION (UPDATED) --- */
         .background-shapes {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: 0; /* Самый нижний слой */
             overflow: hidden;
             pointer-events: none;
         }
 
         .shape {
             position: absolute;
-            background: rgba(99, 102, 241, 0.08); /* Indigo with low opacity */
-            border-radius: 20%;
-            animation: float 25s infinite linear;
+            bottom: -150px; /* Start below the screen */
+            background: rgba(99, 102, 241, 0.1); /* Indigo tint */
+            border-radius: 15%;
+            animation: floatUp linear infinite;
         }
 
-        .shape:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-duration: 30s; }
-        .shape:nth-child(2) { width: 120px; height: 120px; top: 70%; left: 80%; animation-duration: 40s; animation-delay: -5s; }
-        .shape:nth-child(3) { width: 50px; height: 50px; top: 40%; left: 40%; animation-duration: 25s; animation-delay: -10s; background: rgba(16, 185, 129, 0.08); }
-        .shape:nth-child(4) { width: 150px; height: 150px; top: 80%; left: 20%; animation-duration: 45s; animation-delay: -15s; }
-        .shape:nth-child(5) { width: 60px; height: 60px; top: 20%; left: 90%; animation-duration: 35s; background: rgba(239, 68, 68, 0.08); }
-        .shape:nth-child(6) { width: 100px; height: 100px; top: 50%; left: 5%; animation-duration: 38s; }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-100vh) rotate(360deg); }
+        /* Animation: Start below, go to top */
+        @keyframes floatUp {
+            0% {
+                bottom: -150px;
+                transform: rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                bottom: 110vh; /* Go above screen */
+                transform: rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
         }
+
+        /* Generating randomized positions via CSS nth-child would be long, 
+           doing it in React style below is cleaner */
     </style>
 </head>
 <body>
@@ -118,17 +139,36 @@
         const IconEye = () => <i data-lucide="eye" className="w-5 h-5"></i>;
         const IconHelp = () => <i data-lucide="help-circle" className="w-5 h-5"></i>;
 
-        // --- BACKGROUND COMPONENT ---
-        const BackgroundEffect = () => (
-            <div className="background-shapes">
-                <div className="shape"></div>
-                <div className="shape"></div>
-                <div className="shape"></div>
-                <div className="shape"></div>
-                <div className="shape"></div>
-                <div className="shape"></div>
-            </div>
-        );
+        // --- BACKGROUND COMPONENT (Improved) ---
+        const BackgroundEffect = () => {
+            // Generate deterministic random-like styles for shapes
+            const shapes = Array.from({ length: 15 }).map((_, i) => {
+                const size = 30 + (i * 7) % 80; // Size between 30 and 110
+                const left = (i * 7) % 95; // Position 0-95%
+                const duration = 15 + (i * 3) % 20; // 15-35s
+                const delay = (i * 2) % 15; // 0-15s delay
+                const color = i % 3 === 0 ? 'rgba(99, 102, 241, 0.08)' : // Indigo
+                              i % 3 === 1 ? 'rgba(16, 185, 129, 0.08)' : // Green
+                                            'rgba(239, 68, 68, 0.08)';   // Red
+                
+                return {
+                    width: size,
+                    height: size,
+                    left: `${left}%`,
+                    animationDuration: `${duration}s`,
+                    animationDelay: `-${delay}s`, // Negative delay makes them appear started
+                    backgroundColor: color
+                };
+            });
+
+            return (
+                <div className="background-shapes">
+                    {shapes.map((style, idx) => (
+                        <div key={idx} className="shape" style={style}></div>
+                    ))}
+                </div>
+            );
+        };
 
         // --- DATA ---
         const theoryData = [
@@ -162,7 +202,7 @@
             {
                 id: 1,
                 title: "Демоверсия 2021 (Классика)",
-                task: "Исполнитель Черепаха действует на плоскости с декартовой системой координат. В начальный момент Черепаха находится в начале координат, её голова направлена вдоль положительного направления оси ординат, хвост опущен. При опущенном хвосте Черепаха оставляет на поле след в виде линии. В каждый конкретный момент известно положение исполнителя и направление его движения. У исполнителя существует две команды: Вперёд n (где n – целое число), вызывающая передвижение Черепахи на n единиц в том направлении, куда указывает её голова, и Направо m (где m – целое число), вызывающая изменение направления движения на m градусов по часовой стрелке. Запись Повтори k [Команда1 Команда2 … КомандаS] означает, что последовательность из S команд повторится k раз. Черепахе был дан для исполнения следующий алгоритм: Повтори 7 [Вперёд 10 Направо 120]. Определите, сколько точек с целочисленными координатами будут находиться внутри области, ограниченной линией, заданной данным алгоритмом. Точки на линии учитывать не следует.",
+                task: "Исполнитель Черепаха действует на плоскости с декартовой системой координат... Черепахе был дан для исполнения следующий алгоритм: Повтори 7 [Вперёд 10 Направо 120]. Определите количество точек внутри.",
                 overrideTask: "Черепахе был дан для исполнения следующий алгоритм: Повтори 2 [Вперёд 6 Направо 90 Вперёд 10 Направо 90]. Определите, сколько точек с целочисленными координатами будут находиться внутри области (не включая границы).",
                 correctAnswer: "45",
                 kumirCode: `использовать Черепаха
@@ -408,8 +448,9 @@ t.done()`,
             </nav>
         );
 
+        // Increased z-index for Hero to ensure squares go behind
         const Hero = () => (
-            <div className="bg-indigo-700/90 text-white py-12 px-4 mb-8 backdrop-blur-sm shadow-xl">
+            <div className="relative z-10 bg-indigo-700/95 text-white py-12 px-4 mb-8 shadow-xl backdrop-blur-sm">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-md">Систематизация методов решения Задания 6 ЕГЭ</h1>
                     <p className="text-indigo-100 text-lg mb-6">Справочник по визуальным методам: Кумир, Python и ручной счет</p>
@@ -573,22 +614,25 @@ t.done()`;
             );
         };
 
+        // --- IMPROVED SOLUTION MODAL ---
         const SolutionModal = ({ isOpen, onClose, taskData }) => {
             const [activeSolTab, setActiveSolTab] = useState('kumir');
             
             if (!isOpen || !taskData) return null;
 
             return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4 animate-fade-in">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-                        <div className="flex justify-between items-center p-6 border-b">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop p-4 animate-modal-in">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+                        {/* Header - Fixed */}
+                        <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
                             <h3 className="text-xl font-bold text-gray-800">Решение: {taskData.title}</h3>
-                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition">
                                 <IconX />
                             </button>
                         </div>
                         
-                        <div className="flex border-b px-6 bg-gray-50">
+                        {/* Tabs - Fixed */}
+                        <div className="flex border-b px-6 bg-gray-50 flex-shrink-0">
                             {[
                                 { id: 'manual', label: 'Ручное рассуждение' },
                                 { id: 'kumir', label: 'Кумир' },
@@ -608,10 +652,11 @@ t.done()`;
                             ))}
                         </div>
 
+                        {/* Content - Scrollable */}
                         <div className="overflow-y-auto p-6 flex-grow">
                             {activeSolTab === 'manual' && (
                                 <div className="space-y-4">
-                                    <p className="text-gray-700 leading-relaxed">{taskData.manualDesc}</p>
+                                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">{taskData.manualDesc}</p>
                                     <div className="bg-yellow-50 p-4 rounded border border-yellow-200 text-sm text-yellow-800">
                                         <strong>Внимание:</strong> Ручной метод эффективен только для простых фигур (квадраты, прямоугольники). Для сложных фигур используйте Кумир или Python.
                                     </div>
@@ -637,8 +682,9 @@ t.done()`;
                             )}
                         </div>
                         
-                        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">
-                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">Закрыть</button>
+                        {/* Footer - Fixed */}
+                        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end flex-shrink-0">
+                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition">Закрыть</button>
                         </div>
                     </div>
                 </div>
@@ -801,25 +847,29 @@ t.done()`;
             </div>
         );
 
+        // --- IMPROVED ANSWERS MODAL ---
         const AnswersModal = ({ isOpen, onClose, data }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col animate-fade-in">
-                        <div className="flex justify-between items-center p-6 border-b">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center modal-backdrop p-4 animate-modal-in">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
                             <h3 className="text-xl font-bold text-gray-800">Правильные ответы</h3>
-                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition">
                                 <IconX />
                             </button>
                         </div>
-                        <div className="overflow-y-auto p-6 space-y-6">
+                        
+                        {/* Scrollable Content */}
+                        <div className="overflow-y-auto p-6 space-y-6 flex-grow">
                             {data.map((q, idx) => (
                                 <div key={idx} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                                     <div className="flex gap-3">
-                                        <span className="font-bold text-indigo-600">{idx + 1}.</span>
+                                        <span className="font-bold text-indigo-600 flex-shrink-0">{idx + 1}.</span>
                                         <div>
                                             <p className="font-medium text-gray-900 mb-2">{q.question}</p>
-                                            <div className="text-sm bg-green-50 text-green-800 px-3 py-2 rounded-lg border border-green-100">
+                                            <div className="text-sm bg-green-50 text-green-800 px-3 py-2 rounded-lg border border-green-100 mb-2 inline-block">
                                                 <span className="font-bold">Ответ: </span>
                                                 {q.options.find(o => o.correct)?.text}
                                             </div>
@@ -829,8 +879,10 @@ t.done()`;
                                 </div>
                             ))}
                         </div>
-                        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">
-                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">Закрыть</button>
+                        
+                        {/* Footer */}
+                        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end flex-shrink-0">
+                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition">Закрыть</button>
                         </div>
                     </div>
                 </div>
@@ -872,15 +924,15 @@ t.done()`;
 
             if (showResult) {
                 return (
-                    <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center animate-fade-in mt-10">
+                    <div className="max-w-md mx-auto bg-white/95 backdrop-blur rounded-xl shadow-lg p-8 text-center animate-fade-in mt-10">
                         <AnswersModal isOpen={showAnswersModal} onClose={() => setShowAnswersModal(false)} data={quizData} />
                         <div className="inline-block p-4 rounded-full bg-indigo-100 text-indigo-600 mb-4"><IconAward className="w-8 h-8"/></div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Тест завершен!</h2>
                         <div className="text-5xl font-extrabold text-indigo-600 my-6">{Math.round((score/quizData.length)*100)}%</div>
                         <p className="text-gray-600 mb-8">{score} из {quizData.length} правильных</p>
                         <div className="space-y-3">
-                            <button onClick={() => setShowAnswersModal(true)} className="w-full flex items-center justify-center bg-white border-2 border-indigo-600 text-indigo-600 py-3 rounded-lg hover:bg-indigo-50 font-semibold"><IconList className="w-4 h-4 mr-2"/> Ответы</button>
-                            <button onClick={resetQuiz} className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold">Заново</button>
+                            <button onClick={() => setShowAnswersModal(true)} className="w-full flex items-center justify-center bg-white border-2 border-indigo-600 text-indigo-600 py-3 rounded-lg hover:bg-indigo-50 font-semibold transition"><IconList className="w-4 h-4 mr-2"/> Ответы</button>
+                            <button onClick={resetQuiz} className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold transition">Заново</button>
                         </div>
                     </div>
                 );
@@ -914,7 +966,7 @@ t.done()`;
                             <div className={`mt-6 p-4 rounded-lg ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                 <p className="font-bold mb-1">{isCorrect ? 'Верно!' : 'Неверно.'}</p>
                                 <p className="text-sm">{q.explanation}</p>
-                                <button onClick={nextQuestion} className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">{currentQuestion === quizData.length - 1 ? 'Завершить' : 'Далее'}</button>
+                                <button onClick={nextQuestion} className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition">{currentQuestion === quizData.length - 1 ? 'Завершить' : 'Далее'}</button>
                             </div>
                         )}
                     </div>
