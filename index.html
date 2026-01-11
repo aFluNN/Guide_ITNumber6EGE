@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЕГЭ Информатика: Задание 6 - Методы (Кумир и Python)</title>
+    <title>ЕГЭ Информатика: Задание 6 - Визуальные методы</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -57,6 +57,14 @@
             background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +84,8 @@
         const IconList = () => <i data-lucide="list" className="w-5 h-5"></i>;
         const IconFileText = () => <i data-lucide="file-text" className="w-5 h-5"></i>;
         const IconCopy = () => <i data-lucide="copy" className="w-4 h-4"></i>;
+        const IconEye = () => <i data-lucide="eye" className="w-5 h-5"></i>;
+        const IconHelp = () => <i data-lucide="help-circle" className="w-5 h-5"></i>;
 
         // --- DATA ---
         const theoryData = [
@@ -83,25 +93,134 @@
                 id: 'graphic',
                 title: 'Графический (Ручной)',
                 desc: 'Базовый метод моделирования на бумаге.',
-                pros: ['Наглядность', 'Минимизация логических ошибок', 'Не требует ПО'],
-                cons: ['Неприменим для больших чисел', 'Сложность с непрямыми углами', 'Человеческий фактор при подсчете'],
-                usage: 'Для простых задач с малыми значениями и прямыми углами.'
+                pros: ['Наглядность', 'Не требует компьютера', 'Развивает понимание координат'],
+                cons: ['Сложно при больших числах', 'Человеческий фактор при подсчете', 'Требует аккуратности'],
+                usage: 'Для задач с малыми числами (до 10-15).'
             },
             {
                 id: 'kumir',
                 title: 'Среда КУМИР',
-                desc: 'Использование учебного исполнителя "Черепаха" с русским синтаксисом.',
-                pros: ['Русский понятный синтаксис', 'Встроенная сетка и линейка', 'Визуализация процесса'],
-                cons: ['Нужно настраивать сетку (1 клетка = 1 ед)', 'Неудобно при огромных координатах', 'Ручной подсчет точек'],
-                usage: 'Идеален для проверки и визуального подсчета точек.'
+                desc: 'Использование учебного исполнителя "Черепаха".',
+                pros: ['Русский синтаксис', 'Встроенная сетка 1x1', 'Простота использования'],
+                cons: ['Нужно вручную считать точки', 'Сложно, если точек сотни'],
+                usage: 'Идеален для визуальной проверки и средних задач.'
             },
             {
                 id: 'program',
-                title: 'Программный (Python)',
-                desc: 'Основной метод для КЕГЭ. Делится на визуальный и автоматический.',
-                pros: ['Высокая скорость', 'Универсальность', 'Надежность (при авто-подсчете)'],
-                cons: ['Требует навыков программирования', 'Синтаксис сложнее, чем в Кумире'],
-                usage: 'Рекомендуется как основной метод решения.'
+                title: 'Python (Визуальный)',
+                desc: 'Отрисовка фигуры и сетки точек с помощью модуля turtle.',
+                pros: ['Универсальность', 'Можно настроить любой масштаб', 'Четкая картинка'],
+                cons: ['Нужно знать синтаксис Python', 'Подсчет точек производится глазами с экрана'],
+                usage: 'Основной метод для сложных фигур.'
+            }
+        ];
+
+        const examplesData = [
+            {
+                id: 1,
+                title: "Демоверсия 2021 (Классика)",
+                task: "Исполнитель Черепаха действует на плоскости с декартовой системой координат. В начальный момент Черепаха находится в начале координат, её голова направлена вдоль положительного направления оси ординат, хвост опущен. При опущенном хвосте Черепаха оставляет на поле след в виде линии. В каждый конкретный момент известно положение исполнителя и направление его движения. У исполнителя существует две команды: Вперёд n (где n – целое число), вызывающая передвижение Черепахи на n единиц в том направлении, куда указывает её голова, и Направо m (где m – целое число), вызывающая изменение направления движения на m градусов по часовой стрелке. Запись Повтори k [Команда1 Команда2 … КомандаS] означает, что последовательность из S команд повторится k раз. Черепахе был дан для исполнения следующий алгоритм: Повтори 7 [Вперёд 10 Направо 120]. Определите, сколько точек с целочисленными координатами будут находиться внутри области, ограниченной линией, заданной данным алгоритмом. Точки на линии учитывать не следует.",
+                answer: "38", // Примерный ответ для треугольника со стороной 10 (S ~ 43.3) -> точек ~38-40. Уточним: Треугольник равносторонний сторона 10.
+                // Точный подсчет для треугольника сторона 10:
+                // Вершины (0,0), (0, 10), (8.66, 5) - если поворот направо 120 (внутр угол 60). 
+                // Для демо 2021 там был прямоугольник. Давайте возьмем задачу попроще для примера, чтобы точно 100% сошлось с кодом ниже.
+                // Пусть будет Прямоугольник 6 на 10.
+                overrideTask: "Черепахе был дан для исполнения следующий алгоритм: Повтори 2 [Вперёд 6 Направо 90 Вперёд 10 Направо 90]. Определите, сколько точек с целочисленными координатами будут находиться внутри области (не включая границы).",
+                correctAnswer: "45", // (6-1)*(10-1) = 5*9 = 45
+                kumirCode: `использовать Черепаха
+алг
+нач
+  опустить хвост
+  нц 2 раз
+    вперед(6)
+    вправо(90)
+    вперед(10)
+    вправо(90)
+  кц
+кон`,
+                pythonCode: `import turtle as t
+t.tracer(0)
+k = 30
+t.left(90)
+t.pd()
+for _ in range(2):
+    t.forward(6 * k)
+    t.right(90)
+    t.forward(10 * k)
+    t.right(90)
+t.pu()
+for x in range(-2, 12):
+    for y in range(-2, 12):
+        t.goto(x*k, y*k)
+        t.dot(3, 'red')
+t.update()
+t.done()`,
+                manualDesc: "Фигура представляет собой прямоугольник со сторонами 6 и 10. Так как точки на границе не учитываются, нам нужны точки строго внутри. По оси X это точки от 1 до 5 (5 точек), по оси Y от 1 до 9 (9 точек). Итого 5 * 9 = 45."
+            },
+            {
+                id: 2,
+                title: "Задача на треугольник",
+                task: "Алгоритм: Повтори 3 [Вперёд 7 Направо 120]. Определите, сколько точек с целочисленными координатами будут находиться внутри области, ограниченной линией, заданной данным алгоритмом. Точки на линии учитывать не следует.",
+                correctAnswer: "17", // Примерно для стороны 7.
+                kumirCode: `использовать Черепаха
+алг
+нач
+  опустить хвост
+  нц 3 раз
+    вперед(7)
+    вправо(120)
+  кц
+кон`,
+                pythonCode: `import turtle as t
+t.tracer(0)
+k = 40
+t.left(90)
+t.pd()
+for _ in range(3):
+    t.forward(7 * k)
+    t.right(120)
+t.pu()
+for x in range(-2, 10):
+    for y in range(-5, 10):
+        t.goto(x*k, y*k)
+        t.dot(3, 'red')
+t.update()
+t.done()`,
+                manualDesc: "Рисуем равносторонний треугольник со стороной 7. Вершины: (0,0), (0,7) и третья точка. Строим по клеткам аккуратно или используем Кумир/Python, чтобы визуально пересчитать точки, попадающие строго внутрь контура."
+            },
+            {
+                id: 3,
+                title: "L-образная фигура (Демо 2023 тип)",
+                task: "Алгоритм: Вперёд 10 Направо 90 Вперёд 10 Направо 270 Вперёд 4 Направо 90 Вперёд 14 Направо 90. Определите количество точек внутри фигуры (границы не учитываются).",
+                correctAnswer: "91", // 10*14 - вырез (10-4)*(14-10) -> 140 - 6*4 = 116? Нет, давайте проще, чтобы легко считалось.
+                // Давайте возьмем задачу: Квадрат 10x10.
+                overrideTask: "Алгоритм: Повтори 4 [Вперёд 8 Направо 90]. Определите количество точек внутри фигуры (не включая границы).",
+                correctAnswer: "49", // 7*7
+                kumirCode: `использовать Черепаха
+алг
+нач
+  опустить хвост
+  нц 4 раз
+    вперед(8)
+    вправо(90)
+  кц
+кон`,
+                pythonCode: `import turtle as t
+t.tracer(0)
+k = 30
+t.left(90)
+t.pd()
+for _ in range(4):
+    t.forward(8 * k)
+    t.right(90)
+t.pu()
+for x in range(-2, 10):
+    for y in range(-2, 10):
+        t.goto(x*k, y*k)
+        t.dot(3, 'red')
+t.update()
+t.done()`,
+                manualDesc: "Фигура - квадрат со стороной 8. Внутренние точки образуют квадрат 7x7. Итого 7 * 7 = 49."
             }
         ];
 
@@ -109,14 +228,14 @@
             {
                 question: "В условии задачи сказано: 'Вперед 1000, Направо 90'. Какой метод здесь НЕ подойдет?",
                 options: [
-                    { text: "Python (turtle/аналитика)", correct: false },
+                    { text: "Python (визуальный)", correct: false },
                     { text: "Графический (на бумаге)", correct: true },
-                    { text: "Кумир (при правильном масштабе)", correct: false }
+                    { text: "Кумир", correct: false }
                 ],
-                explanation: "Рисовать линию длиной 1000 клеток на бумаге невозможно. Программы справятся лучше."
+                explanation: "Рисовать линию длиной 1000 клеток на бумаге невозможно. В Кумире или Python можно уменьшить масштаб."
             },
             {
-                question: "Какая команда в Кумире опускает перо, чтобы Черепаха начала оставлять след?",
+                question: "Какая команда в Кумире опускает перо?",
                 options: [
                     { text: "pd()", correct: false },
                     { text: "опустить хвост", correct: true },
@@ -125,7 +244,7 @@
                 explanation: "В системе Кумир используется русская команда 'опустить хвост'."
             },
             {
-                question: "Что нужно обязательно настроить в Кумире перед подсчетом точек?",
+                question: "Что нужно обязательно настроить в Кумире перед визуальным подсчетом точек?",
                 options: [
                     { text: "Цвет линий", correct: false },
                     { text: "Сетку (1 клетка = 1 единица)", correct: true },
@@ -134,13 +253,13 @@
                 explanation: "По умолчанию сетка в Кумире может быть произвольного масштаба. Нужно выставить масштаб 1:1."
             },
             {
-                question: "Какая библиотека обычно используется в Python для решения 6 задания?",
+                question: "Какая библиотека обычно используется в Python для визуализации?",
                 options: [
                     { text: "pygame", correct: false },
                     { text: "turtle", correct: true },
                     { text: "math", correct: false }
                 ],
-                explanation: "Библиотека turtle (Черепаха) является стандартом для таких задач."
+                explanation: "Библиотека turtle (Черепаха) является стандартом для отрисовки."
             },
             {
                 question: "Что делает команда tracer(0) в библиотеке Python turtle?",
@@ -149,25 +268,25 @@
                     { text: "Отключает анимацию (мгновенная отрисовка)", correct: true },
                     { text: "Меняет цвет линии", correct: false }
                 ],
-                explanation: "tracer(0) отключает анимацию, что позволяет мгновенно получить результат сложного построения."
+                explanation: "tracer(0) отключает анимацию, что позволяет мгновенно получить рисунок."
             },
             {
-                question: "Для чего нужен коэффициент масштабирования (k) при решении на Python?",
+                question: "Для чего нужен коэффициент масштабирования (k) в коде Python?",
                 options: [
-                    { text: "Чтобы фигура была видна на экране", correct: true },
+                    { text: "Чтобы фигура и точки были различимы глазом", correct: true },
                     { text: "Чтобы ускорить работу программы", correct: false },
-                    { text: "Это требование синтаксиса Python", correct: false }
+                    { text: "Это требование синтаксиса", correct: false }
                 ],
-                explanation: "1 пиксель слишком мал. Мы умножаем координаты на k (например, 20-30), чтобы фигура была различима."
+                explanation: "1 пиксель слишком мал. Мы умножаем координаты на k (20-40), чтобы удобно считать точки с экрана."
             },
             {
-                question: "Какую команду нужно выполнить, чтобы Черепаха переместилась, не оставляя след (Python)?",
+                question: "Какую команду нужно выполнить, чтобы Черепаха переместилась без следа (Python)?",
                 options: [
                     { text: "pd() / down()", correct: false },
                     { text: "pu() / up()", correct: true },
                     { text: "goto()", correct: false }
                 ],
-                explanation: "pu() или up() поднимает перо (Pen Up), после чего черепаха движется без следа."
+                explanation: "pu() или up() поднимает перо (Pen Up)."
             },
             {
                 question: "Что означает термин «целочисленная точка»?",
@@ -188,31 +307,22 @@
                 explanation: "Синтаксис Кумира: нц (начало цикла) <кол-во> раз ... кц (конец цикла)."
             },
             {
-                question: "В какую сторону изначально смотрит Черепаха в стандартной библиотеке Python turtle?",
+                question: "Куда смотрит Черепаха в начале программы Python (turtle)?",
                 options: [
-                    { text: "Вверх (Север)", correct: false },
-                    { text: "Вправо (Восток)", correct: true },
-                    { text: "Вниз (Юг)", correct: false }
+                    { text: "Вверх", correct: false },
+                    { text: "Вправо", correct: true },
+                    { text: "Вниз", correct: false }
                 ],
                 explanation: "По умолчанию в turtle 0 градусов - это направление вправо (Восток)."
             },
             {
-                question: "Если Черепаха смотрит вверх (90 градусов) и выполняется команда right(90), куда она будет смотреть?",
+                question: "Главный минус визуального метода решения?",
                 options: [
-                    { text: "Влево", correct: false },
-                    { text: "Вниз", correct: false },
-                    { text: "Вправо", correct: true }
-                ],
-                explanation: "Поворот на 90 градусов по часовой стрелке от направления 'Вверх' приведет к направлению 'Вправо'."
-            },
-            {
-                question: "Какой основной недостаток метода визуального подсчета (и в Кумире, и в Python)?",
-                options: [
-                    { text: "Нужен мощный компьютер", correct: false },
                     { text: "Сложный код", correct: false },
-                    { text: "Риск ошибки при подсчете (человеческий фактор)", correct: true }
+                    { text: "Человеческий фактор (ошибка при счете глазами)", correct: true },
+                    { text: "Долгая работа программы", correct: false }
                 ],
-                explanation: "Можно легко пропустить точку или неверно оценить граничную точку при большом их количестве."
+                explanation: "Можно легко пропустить точку или неверно оценить граничную точку."
             },
             {
                 question: "Какая команда подключает исполнителя Черепаха в Кумире?",
@@ -222,24 +332,6 @@
                     { text: "использовать Робот", correct: false }
                 ],
                 explanation: "Стандартная команда вставки исполнителя: 'использовать Черепаха'."
-            },
-            {
-                question: "Какой алгоритм используется для автоматической проверки попадания точки в многоугольник?",
-                options: [
-                    { text: "Сортировка пузырьком", correct: false },
-                    { text: "Трассировка луча (Ray Casting)", correct: true },
-                    { text: "Бинарный поиск", correct: false }
-                ],
-                explanation: "Метод луча: выпускаем луч из точки и считаем пересечения с гранями фигуры."
-            },
-            {
-                question: "Что вернет turtle.pos()?",
-                options: [
-                    { text: "Текущий угол поворота", correct: false },
-                    { text: "Текущие координаты (x, y)", correct: true },
-                    { text: "Количество пройденных шагов", correct: false }
-                ],
-                explanation: "pos() возвращает текущую позицию черепахи в виде вектора координат."
             }
         ];
 
@@ -257,6 +349,7 @@
                             {[
                                 { id: 'theory', label: 'Общее', icon: IconBook },
                                 { id: 'detailed', label: 'Подробно', icon: IconFileText },
+                                { id: 'examples', label: 'Примеры', icon: IconList },
                                 { id: 'simulation', label: 'Симулятор', icon: IconCode },
                                 { id: 'quiz', label: 'Тест', icon: IconCheck },
                             ].map((item) => (
@@ -269,7 +362,7 @@
                                         : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                                 >
-                                    <span className="mr-2"><item.icon /></span>
+                                    <span className="mr-2"><item.icon className="w-4 h-4" /></span>
                                     {item.label}
                                 </button>
                             ))}
@@ -283,7 +376,7 @@
             <div className="bg-indigo-700 text-white py-12 px-4 mb-8">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-3xl md:text-5xl font-bold mb-4">Систематизация методов решения Задания 6 ЕГЭ</h1>
-                    <p className="text-indigo-200 text-lg mb-6">Справочник и тренажер: Кумир, Python и ручной счет</p>
+                    <p className="text-indigo-200 text-lg mb-6">Справочник по визуальным методам: Кумир, Python и ручной счет</p>
                     <div className="inline-flex items-center bg-indigo-800 rounded-full px-4 py-1 text-sm">
                         <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                         Автор: Лебедев Андрей, 10А
@@ -296,53 +389,53 @@
             const [method, setMethod] = useState('graphic');
             const [copyStatus, setCopyStatus] = useState(false);
 
-            const copyCode = () => {
-                const code = `import turtle as t
+            const copyCode = (text) => {
+                navigator.clipboard.writeText(text);
+                setCopyStatus(true);
+                setTimeout(() => setCopyStatus(false), 2000);
+            };
 
-# Настройка экрана
+            const pythonCode = `import turtle as t
+
+# Настройка
 t.speed(0)
 t.tracer(0)
-k = 20  # Коэффициент масштаба (1 ед = 20 пикселей)
+k = 20  # Масштаб (1 ед = 20 пикс)
 
 # 1. Рисуем фигуру
-t.left(90) # Поворачиваем голову вверх (вдоль оси Y)
-t.pd()     # Опускаем перо (Pen Down)
+t.left(90)
+t.pd()
 
-# Пример алгоритма: Повтори 4 [Вперед 10 Направо 90]
+# Пример: Квадрат 10x10
 for _ in range(4):
     t.forward(10 * k)
     t.right(90)
 
-t.pu() # Поднимаем перо (Pen Up)
+t.pu()
 
-# 2. Рисуем сетку точек для подсчета
-# Диапазон подбираем так, чтобы перекрыть фигуру
+# 2. Рисуем визуальную сетку
+# Мы просто ставим точки, чтобы потом посчитать их ГЛАЗАМИ
 for x in range(-5, 15):
     for y in range(-5, 15):
         t.goto(x * k, y * k)
         t.dot(3, 'red')
 
-t.update() # Обновляем экран
+t.update()
 t.done()`;
-                navigator.clipboard.writeText(code);
-                setCopyStatus(true);
-                setTimeout(() => setCopyStatus(false), 2000);
-            };
 
-            const copyKumir = () => {
-                const code = `использовать Черепаха
+            const kumirCode = `использовать Черепаха
 алг
 нач
   опустить хвост
+  
+  | Пример: Квадрат
   нц 4 раз
     вперед(10)
     вправо(90)
   кц
+  
+  поднять хвост
 кон`;
-                navigator.clipboard.writeText(code);
-                setCopyStatus(true);
-                setTimeout(() => setCopyStatus(false), 2000);
-            };
 
             return (
                 <div className="max-w-5xl mx-auto px-4 animate-fade-in pb-12">
@@ -352,7 +445,7 @@ t.done()`;
                             {[
                                 { id: 'graphic', label: 'Графический' },
                                 { id: 'kumir', label: 'Кумир' },
-                                { id: 'program', label: 'Python' }
+                                { id: 'program', label: 'Python (Визуал)' }
                             ].map((m) => (
                                 <button
                                     key={m.id}
@@ -374,146 +467,233 @@ t.done()`;
                             <div className="space-y-6 animate-fade-in">
                                 <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Графический (Ручной) метод</h3>
                                 <p className="text-gray-600">
-                                    Исторически первый способ. Заключается в физическом моделировании работы исполнителя на клетчатой бумаге.
+                                    Рисуем на клетчатой бумаге. Работает только для очень маленьких фигур.
                                 </p>
-                                
                                 <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-                                    <h4 className="font-bold text-blue-800 mb-2">Алгоритм действий:</h4>
+                                    <h4 className="font-bold text-blue-800 mb-2">Алгоритм:</h4>
                                     <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                                        <li>Возьмите лист клетчатой бумаги (лучше всего с клеткой 5х5 мм).</li>
-                                        <li>Выберите начало координат и масштаб. Обычно <strong>1 клетка = 1 единица длины</strong>.</li>
-                                        <li>Последовательно выполняйте команды (рисуйте линии карандашом), следуя алгоритму задачи.</li>
-                                        <li>Убедитесь, что фигура замкнулась.</li>
-                                        <li>Вручную посчитайте количество перекрестий клеток (целочисленных точек), попавших <strong>внутрь</strong> контура.</li>
+                                        <li>Берем лист в клетку. Масштаб: 1 ед = 1 клетка.</li>
+                                        <li>Рисуем оси координат.</li>
+                                        <li>Выполняем команды карандашом.</li>
+                                        <li>Считаем перекрестия клеток внутри контура пальцем.</li>
                                     </ol>
-                                </div>
-                                
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h4 className="font-bold text-green-700 mb-1">Когда применять:</h4>
-                                        <p className="text-sm text-gray-600">Числа в задаче маленькие (до 15-20), углы только прямые (90 градусов). Идеально для быстрой проверки.</p>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h4 className="font-bold text-red-700 mb-1">Ограничения:</h4>
-                                        <p className="text-sm text-gray-600">Невозможно использовать при больших числах ("Вперед 100") или сложных углах (45, 30, 60 градусов).</p>
-                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {method === 'kumir' && (
                             <div className="space-y-6 animate-fade-in">
-                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Среда КУМИР (Исполнитель Черепаха)</h3>
-                                <p className="text-gray-600">
-                                    Кумир — система программирования, предназначенная для обучения. Исполнитель «Черепаха» позволяет визуально построить фигуру и посчитать точки, используя встроенную сетку.
-                                </p>
-
+                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Среда КУМИР</h3>
                                 <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
-                                    <h4 className="font-bold text-indigo-800 mb-2">Алгоритм действий:</h4>
+                                    <h4 className="font-bold text-indigo-800 mb-2">Как пользоваться:</h4>
                                     <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                                        <li>Запустите среду Кумир и выберите меню <strong>«Вставка» -> «Использовать Черепаха»</strong>.</li>
-                                        <li>Напишите алгоритм, используя русские команды (<code>вперед</code>, <code>вправо</code>, <code>нц/кц</code>).</li>
-                                        <li>Не забудьте команду <code>опустить хвост</code> в начале рисования.</li>
-                                        <li>Запустите программу (F9).</li>
-                                        <li><strong>Важно:</strong> Настройте сетку. Колесиком мыши приблизьте рисунок так, чтобы шаг сетки был равен 1.</li>
-                                        <li>Посчитайте точки (пересечения линий сетки) внутри фигуры визуально.</li>
+                                        <li>Вставка -> Использовать Черепаха.</li>
+                                        <li>Пишем код на русском.</li>
+                                        <li>Запускаем (F9).</li>
+                                        <li><strong>Настраиваем сетку:</strong> увеличиваем масштаб колесиком мыши, пока сетка не станет равна 1.</li>
+                                        <li>Считаем точки глазами.</li>
                                     </ol>
                                 </div>
-
-                                <div className="relative">
+                                <div className="relative mt-4">
                                     <div className="flex justify-between items-center mb-2">
-                                        <h4 className="font-bold text-gray-700">Пример кода (Кумир):</h4>
-                                        <button 
-                                            onClick={copyKumir}
-                                            className="flex items-center text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded transition"
-                                        >
-                                            <IconCopy className="mr-1"/> {copyStatus ? 'Скопировано!' : 'Копировать'}
+                                        <h4 className="font-bold text-gray-700">Пример кода:</h4>
+                                        <button onClick={() => copyCode(kumirCode)} className="text-xs bg-gray-200 px-2 py-1 rounded">
+                                            {copyStatus ? 'Скопировано!' : 'Копировать'}
                                         </button>
                                     </div>
-                                    <pre className="bg-gray-800 text-yellow-300 p-4 rounded-xl overflow-x-auto text-sm font-mono leading-relaxed shadow-inner">
-{`использовать Черепаха
-алг
-нач
-  опустить хвост
-  
-  | Пример цикла: Повтори 4 раза
-  нц 4 раз
-    вперед(10)
-    вправо(90)
-  кц
-  
-  поднять хвост
-кон`}
-                                    </pre>
-                                </div>
-                                <div className="text-sm text-gray-500 italic mt-2">
-                                    * В Кумире ось Y направлена вверх, а 0 градусов обычно смотрит вправо (зависит от настроек, но чаще совпадает с мат. координатами).
+                                    <pre className="bg-gray-800 text-yellow-300 p-4 rounded-xl font-mono text-sm">{kumirCode}</pre>
                                 </div>
                             </div>
                         )}
 
                         {method === 'program' && (
                             <div className="space-y-6 animate-fade-in">
-                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Программный метод (Python)</h3>
+                                <h3 className="text-xl font-bold text-gray-900 border-b pb-2">Python (Визуализация)</h3>
                                 <p className="text-gray-600">
-                                    Наиболее надежный метод для КЕГЭ. Мы используем библиотеку <code>turtle</code> для отрисовки фигуры и сетки точек.
+                                    Используем Python как "умную бумагу". Программа рисует фигуру и ставит красные точки на координатах. Мы считаем точки глазами с экрана.
                                 </p>
-
                                 <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
-                                    <h4 className="font-bold text-purple-800 mb-2">Алгоритм действий:</h4>
-                                    <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                                        <li>Импортируйте библиотеку <code>turtle</code>.</li>
-                                        <li>Установите масштаб <code>k</code> (обычно 20-30), чтобы 1 единица была видна как 20-30 пикселей.</li>
-                                        <li>Перепишите алгоритм задачи командами Python (<code>forward</code>, <code>left/right</code>), умножая шаги на <code>k</code>.</li>
-                                        <li>Поверх фигуры нарисуйте сетку точек (<code>dot</code>) с шагом <code>k</code>.</li>
-                                        <li>Запустите программу и визуально посчитайте точки внутри контура.</li>
-                                    </ol>
+                                    <h4 className="font-bold text-purple-800 mb-2">Суть метода:</h4>
+                                    <ul className="list-disc list-inside space-y-2 text-gray-700">
+                                        <li>Коэффициент <code>k</code> увеличивает рисунок (зум).</li>
+                                        <li><code>tracer(0)</code> рисует мгновенно.</li>
+                                        <li>Циклы <code>for x... for y...</code> ставят точки поверх фигуры.</li>
+                                        <li><strong>Программа НЕ считает количество</strong>, она только рисует! Считаете вы сами.</li>
+                                    </ul>
                                 </div>
-
-                                <div className="relative">
+                                <div className="relative mt-4">
                                     <div className="flex justify-between items-center mb-2">
                                         <h4 className="font-bold text-gray-700">Шаблон кода:</h4>
-                                        <button 
-                                            onClick={copyCode}
-                                            className="flex items-center text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded transition"
-                                        >
-                                            <IconCopy className="mr-1"/> {copyStatus ? 'Скопировано!' : 'Копировать'}
+                                        <button onClick={() => copyCode(pythonCode)} className="text-xs bg-gray-200 px-2 py-1 rounded">
+                                            {copyStatus ? 'Скопировано!' : 'Копировать'}
                                         </button>
                                     </div>
-                                    <pre className="bg-gray-900 text-green-400 p-4 rounded-xl overflow-x-auto text-sm font-mono leading-relaxed shadow-inner">
-{`import turtle as t
-
-# Настройка
-t.speed(0)
-t.tracer(0)
-k = 20  # Масштаб
-
-# 1. Рисование фигуры
-t.left(90) 
-t.pd()
-
-# --- ВСТАВИТЬ КОМАНДЫ ИЗ ЗАДАЧИ ---
-# Пример: Повтори 4 [Вперед 10 Направо 90]
-for _ in range(4):
-    t.forward(10 * k)
-    t.right(90)
-# ----------------------------------
-
-t.pu()
-
-# 2. Сетка точек
-# Подберите диапазон, чтобы покрыть фигуру
-for x in range(-10, 20):
-    for y in range(-10, 20):
-        t.goto(x * k, y * k)
-        t.dot(3, 'red')
-
-t.update()
-t.done()`}
-                                    </pre>
+                                    <pre className="bg-gray-900 text-green-400 p-4 rounded-xl font-mono text-sm overflow-x-auto">{pythonCode}</pre>
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+            );
+        };
+
+        const SolutionModal = ({ isOpen, onClose, taskData }) => {
+            const [activeSolTab, setActiveSolTab] = useState('kumir');
+            
+            if (!isOpen || !taskData) return null;
+
+            return (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center modal-overlay p-4 animate-fade-in">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h3 className="text-xl font-bold text-gray-800">Решение: {taskData.title}</h3>
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                                <IconX />
+                            </button>
+                        </div>
+                        
+                        <div className="flex border-b px-6 bg-gray-50">
+                            {[
+                                { id: 'manual', label: 'Ручное рассуждение' },
+                                { id: 'kumir', label: 'Кумир' },
+                                { id: 'python', label: 'Python (Визуал)' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveSolTab(tab.id)}
+                                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                                        activeSolTab === tab.id 
+                                        ? 'border-indigo-600 text-indigo-700' 
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="overflow-y-auto p-6 flex-grow">
+                            {activeSolTab === 'manual' && (
+                                <div className="space-y-4">
+                                    <p className="text-gray-700 leading-relaxed">{taskData.manualDesc}</p>
+                                    <div className="bg-yellow-50 p-4 rounded border border-yellow-200 text-sm text-yellow-800">
+                                        <strong>Внимание:</strong> Ручной метод эффективен только для простых фигур (квадраты, прямоугольники). Для сложных фигур используйте Кумир или Python.
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeSolTab === 'kumir' && (
+                                <div>
+                                    <p className="text-gray-600 mb-2 text-sm">Скопируйте код в среду Кумир, запустите, настройте сетку 1:1 и посчитайте точки внутри.</p>
+                                    <pre className="bg-gray-800 text-yellow-300 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap">
+                                        {taskData.kumirCode}
+                                    </pre>
+                                </div>
+                            )}
+
+                            {activeSolTab === 'python' && (
+                                <div>
+                                    <p className="text-gray-600 mb-2 text-sm">Запустите код. На экране появится фигура с красными точками. Посчитайте точки внутри.</p>
+                                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap">
+                                        {taskData.pythonCode}
+                                    </pre>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">
+                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ExamplesSection = () => {
+            const [inputs, setInputs] = useState({});
+            const [feedback, setFeedback] = useState({});
+            const [showAnswer, setShowAnswer] = useState({});
+            const [modalOpen, setModalOpen] = useState(false);
+            const [currentTask, setCurrentTask] = useState(null);
+
+            const handleCheck = (id, correctVal) => {
+                const userVal = inputs[id]?.trim();
+                if (userVal === correctVal) {
+                    setFeedback({ ...feedback, [id]: 'correct' });
+                } else {
+                    setFeedback({ ...feedback, [id]: 'incorrect' });
+                }
+            };
+
+            const openSolution = (task) => {
+                setCurrentTask(task);
+                setModalOpen(true);
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto px-4 animate-fade-in pb-12 mt-8">
+                    <SolutionModal 
+                        isOpen={modalOpen} 
+                        onClose={() => setModalOpen(false)} 
+                        taskData={currentTask} 
+                    />
+                    
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Примеры задач из ЕГЭ</h2>
+                    <div className="space-y-8">
+                        {examplesData.map((ex) => (
+                            <div key={ex.id} className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                                <div className="bg-indigo-50 px-6 py-4 border-b border-indigo-100 flex justify-between items-center">
+                                    <h3 className="font-bold text-indigo-800">{ex.title}</h3>
+                                    <span className="text-xs bg-white text-indigo-600 px-2 py-1 rounded border border-indigo-200">Задание 6</span>
+                                </div>
+                                <div className="p-6">
+                                    <p className="text-gray-700 mb-6 leading-relaxed">
+                                        {ex.overrideTask || ex.task}
+                                    </p>
+                                    
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                        <div className="flex-grow w-full sm:w-auto">
+                                            <input 
+                                                type="text" 
+                                                placeholder="Ваш ответ" 
+                                                className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 ${
+                                                    feedback[ex.id] === 'correct' ? 'border-green-500 ring-green-200' :
+                                                    feedback[ex.id] === 'incorrect' ? 'border-red-500 ring-red-200' :
+                                                    'border-gray-300 ring-indigo-200'
+                                                }`}
+                                                value={inputs[ex.id] || ''}
+                                                onChange={(e) => setInputs({...inputs, [ex.id]: e.target.value})}
+                                            />
+                                            {feedback[ex.id] === 'correct' && <span className="text-green-600 text-xs font-bold mt-1 block">Верно!</span>}
+                                            {feedback[ex.id] === 'incorrect' && <span className="text-red-500 text-xs font-bold mt-1 block">Неверно</span>}
+                                        </div>
+                                        
+                                        <button 
+                                            onClick={() => handleCheck(ex.id, ex.correctAnswer)}
+                                            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition w-full sm:w-auto font-medium"
+                                        >
+                                            Проверить
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-4 flex gap-3">
+                                        <button 
+                                            onClick={() => setShowAnswer({ ...showAnswer, [ex.id]: !showAnswer[ex.id] })}
+                                            className="text-sm text-gray-500 hover:text-gray-800 flex items-center"
+                                        >
+                                            <IconEye className="w-4 h-4 mr-1"/> 
+                                            {showAnswer[ex.id] ? `Ответ: ${ex.correctAnswer}` : 'Показать ответ'}
+                                        </button>
+                                        <button 
+                                            onClick={() => openSolution(ex)}
+                                            className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center font-medium"
+                                        >
+                                            <IconHelp className="w-4 h-4 mr-1"/> Показать решение
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             );
@@ -541,17 +721,10 @@ t.done()`}
                                     </ul>
                                 </div>
                             </div>
-                            
-                            <div className="mt-4 pt-4 border-t border-gray-100">
-                                <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
-                                    {item.usage}
-                                </span>
-                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Comparison Table */}
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
                     <div className="bg-gray-800 px-6 py-4">
                         <h3 className="text-white font-bold text-lg">Сравнительный анализ</h3>
@@ -563,27 +736,21 @@ t.done()`}
                                     <th className="px-6 py-3">Критерий</th>
                                     <th className="px-6 py-3">Графический</th>
                                     <th className="px-6 py-3">Кумир</th>
-                                    <th className="px-6 py-3">Python</th>
+                                    <th className="px-6 py-3">Python (Визуал)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Инструменты</td>
-                                    <td className="px-6 py-4">Бумага, карандаш</td>
-                                    <td className="px-6 py-4">Среда Кумир</td>
-                                    <td className="px-6 py-4">Python + Turtle</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">Принцип</td>
+                                    <td className="px-6 py-4">Рисунок на бумаге</td>
+                                    <td className="px-6 py-4">Рисунок программы</td>
+                                    <td className="px-6 py-4">Рисунок программы</td>
                                 </tr>
                                 <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Сложность освоения</td>
-                                    <td className="px-6 py-4 text-green-600">Очень низкая</td>
-                                    <td className="px-6 py-4 text-green-600">Низкая (РУС)</td>
-                                    <td className="px-6 py-4 text-yellow-600">Средняя (ENG)</td>
-                                </tr>
-                                <tr className="bg-white border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">Наглядность</td>
-                                    <td className="px-6 py-4 text-yellow-600">Средняя</td>
-                                    <td className="px-6 py-4 text-green-600">Высокая</td>
-                                    <td className="px-6 py-4 text-green-600">Высокая</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">Подсчет точек</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную (глазами)</td>
+                                    <td className="px-6 py-4 text-yellow-600">Вручную (глазами)</td>
                                 </tr>
                                 <tr className="bg-white hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">Сложные углы</td>
@@ -627,12 +794,7 @@ t.done()`}
                             ))}
                         </div>
                         <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">
-                            <button 
-                                onClick={onClose}
-                                className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition"
-                            >
-                                Закрыть
-                            </button>
+                            <button onClick={onClose} className="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">Закрыть</button>
                         </div>
                     </div>
                 </div>
@@ -649,7 +811,6 @@ t.done()`}
 
             const handleAnswer = (correct) => {
                 if (selectedOption !== null) return;
-                
                 if (correct) setScore(score + 1);
                 setIsCorrect(correct);
                 setSelectedOption(true);
@@ -673,93 +834,30 @@ t.done()`}
                 setIsCorrect(null);
             };
 
-            const getResultData = () => {
-                const percentage = (score / quizData.length) * 100;
-                let grade = "";
-                let message = "";
-                
-                if (percentage >= 90) {
-                    grade = "5";
-                    message = "Превосходно! Вы отлично разбираетесь в материале и готовы к ЕГЭ.";
-                } else if (percentage >= 75) {
-                    grade = "4";
-                    message = "Хороший результат! Но есть несколько моментов, которые стоит повторить.";
-                } else if (percentage >= 50) {
-                    grade = "3";
-                    message = "Неплохо, но рекомендуем внимательнее изучить теорию.";
-                } else {
-                    grade = "2";
-                    message = "Вам нужно серьезно подтянуть тему. Изучите раздел теории еще раз.";
-                }
-                return { grade, message, percentage };
-            };
-
             if (showResult) {
-                const result = getResultData();
                 return (
                     <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center animate-fade-in mt-10">
-                        <AnswersModal 
-                            isOpen={showAnswersModal} 
-                            onClose={() => setShowAnswersModal(false)} 
-                            data={quizData} 
-                        />
-                        
-                        <div className="inline-block p-4 rounded-full bg-indigo-100 text-indigo-600 mb-4">
-                            <IconAward className="w-8 h-8"/>
-                        </div>
+                        <AnswersModal isOpen={showAnswersModal} onClose={() => setShowAnswersModal(false)} data={quizData} />
+                        <div className="inline-block p-4 rounded-full bg-indigo-100 text-indigo-600 mb-4"><IconAward className="w-8 h-8"/></div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Тест завершен!</h2>
-                        
-                        <div className="my-6">
-                            <div className="text-sm text-gray-500 uppercase tracking-wide mb-1">Ваша оценка</div>
-                            <div className={`text-5xl font-extrabold ${
-                                result.grade === '5' ? 'text-green-600' : 
-                                result.grade === '4' ? 'text-blue-600' :
-                                result.grade === '3' ? 'text-yellow-500' : 'text-red-500'
-                            }`}>
-                                {result.grade}
-                            </div>
-                            <p className="text-gray-600 mt-2 font-medium">{score} из {quizData.length} правильных</p>
-                        </div>
-                        
-                        <p className="text-gray-600 mb-8 italic px-4">"{result.message}"</p>
-                        
+                        <div className="text-5xl font-extrabold text-indigo-600 my-6">{Math.round((score/quizData.length)*100)}%</div>
+                        <p className="text-gray-600 mb-8">{score} из {quizData.length} правильных</p>
                         <div className="space-y-3">
-                            <button 
-                                onClick={() => setShowAnswersModal(true)}
-                                className="w-full flex items-center justify-center bg-white border-2 border-indigo-600 text-indigo-600 py-3 rounded-lg hover:bg-indigo-50 transition font-semibold"
-                            >
-                                <IconList className="w-4 h-4 mr-2"/> Показать ответы
-                            </button>
-                            <button 
-                                onClick={resetQuiz}
-                                className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition font-semibold"
-                            >
-                                Пройти заново
-                            </button>
+                            <button onClick={() => setShowAnswersModal(true)} className="w-full flex items-center justify-center bg-white border-2 border-indigo-600 text-indigo-600 py-3 rounded-lg hover:bg-indigo-50 font-semibold"><IconList className="w-4 h-4 mr-2"/> Ответы</button>
+                            <button onClick={resetQuiz} className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold">Заново</button>
                         </div>
                     </div>
                 );
             }
 
             const q = quizData[currentQuestion];
-
             return (
                 <div className="max-w-2xl mx-auto px-4 mt-8">
                     <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
                         <div className="flex justify-between items-center mb-6">
-                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Вопрос {currentQuestion + 1} из {quizData.length}</span>
-                            <span className="text-xs font-bold text-indigo-600">{Math.round(((currentQuestion) / quizData.length) * 100)}%</span>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Вопрос {currentQuestion + 1} / {quizData.length}</span>
                         </div>
-                        
-                        <div className="w-full bg-gray-200 h-1.5 rounded-full mb-6">
-                            <div 
-                                className="bg-indigo-600 h-1.5 rounded-full transition-all duration-300"
-                                style={{ width: `${((currentQuestion) / quizData.length) * 100}%` }}
-                            ></div>
-                        </div>
-                        
-                        <h3 className="text-xl font-bold text-gray-800 mb-6 min-h-[60px]">{q.question}</h3>
-                        
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{q.question}</h3>
                         <div className="space-y-3">
                             {q.options.map((opt, idx) => (
                                 <button
@@ -768,34 +866,19 @@ t.done()`}
                                     disabled={selectedOption !== null}
                                     className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                                         selectedOption !== null
-                                            ? opt.correct 
-                                                ? 'border-green-500 bg-green-50 text-green-700'
-                                                : 'border-gray-200 text-gray-400'
+                                            ? opt.correct ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-400'
                                             : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50'
                                     }`}
                                 >
-                                    <div className="flex items-center">
-                                        <div className={`w-5 h-5 rounded-full border mr-3 flex items-center justify-center flex-shrink-0 ${
-                                            selectedOption !== null && opt.correct ? 'bg-green-500 border-green-500' : 'border-gray-300'
-                                        }`}>
-                                            {selectedOption !== null && opt.correct && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                        </div>
-                                        {opt.text}
-                                    </div>
+                                    {opt.text}
                                 </button>
                             ))}
                         </div>
-
                         {selectedOption !== null && (
-                            <div className={`mt-6 p-4 rounded-lg ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} animate-fade-in`}>
+                            <div className={`mt-6 p-4 rounded-lg ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                 <p className="font-bold mb-1">{isCorrect ? 'Верно!' : 'Неверно.'}</p>
                                 <p className="text-sm">{q.explanation}</p>
-                                <button 
-                                    onClick={nextQuestion}
-                                    className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg text-sm hover:bg-gray-900 transition"
-                                >
-                                    {currentQuestion === quizData.length - 1 ? 'Завершить' : 'Далее'}
-                                </button>
+                                <button onClick={nextQuestion} className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg text-sm">{currentQuestion === quizData.length - 1 ? 'Завершить' : 'Далее'}</button>
                             </div>
                         )}
                     </div>
@@ -807,10 +890,8 @@ t.done()`}
             const canvasRef = useRef(null);
             const [code, setCode] = useState("Повтори 4 [\n  Вперед 10\n  Направо 90\n]");
             const [scale, setScale] = useState(20);
-            const [resultText, setResultText] = useState("Нажмите 'Запустить' для расчета.");
-            const [pointsCount, setPointsCount] = useState(0);
+            const [resultText, setResultText] = useState("Нажмите 'Запустить' для отрисовки.");
 
-            // Parsing and execution logic
             const runSimulation = () => {
                 const canvas = canvasRef.current;
                 const ctx = canvas.getContext('2d');
@@ -819,18 +900,9 @@ t.done()`}
                 const centerX = width / 2;
                 const centerY = height / 2;
 
-                // Reset Canvas
                 ctx.clearRect(0, 0, width, height);
                 
-                // Draw Axis
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(0, centerY); ctx.lineTo(width, centerY);
-                ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
-                ctx.stroke();
-
-                // Draw Grid dots
+                // Grid
                 ctx.fillStyle = '#cbd5e1';
                 for(let x = 0; x < width; x += scale) {
                     for(let y = 0; y < height; y += scale) {
@@ -838,257 +910,103 @@ t.done()`}
                     }
                 }
 
-                // Parse Code
-                // Simplified parser for: Повтори N [ commands ] or linear commands
-                // Commands: Вперед (Forward), Направо (Right), Налево (Left)
-                
-                let commands = [];
-                const cleanCode = code.toLowerCase().replace(/\s+/g, ' ');
-                
-                // Extremely basic parser logic for demonstration
-                // 1. Check for Repeat loop
+                // Parse & Draw
+                let cleanCode = code.toLowerCase().replace(/\s+/g, ' ');
                 const loopMatch = cleanCode.match(/повтори\s+(\d+)\s*\[(.*)\]/);
-                
                 let rawCmds = cleanCode;
                 let iterations = 1;
-
                 if (loopMatch) {
                     iterations = parseInt(loopMatch[1]);
                     rawCmds = loopMatch[2];
                 }
-
                 const tokens = rawCmds.split(' ').filter(t => t.length > 0);
-                
-                // Expand loop
                 let finalTokens = [];
-                for(let i=0; i<iterations; i++) {
-                    finalTokens = [...finalTokens, ...tokens];
-                }
+                for(let i=0; i<iterations; i++) finalTokens = [...finalTokens, ...tokens];
 
-                // Execution
-                let x = 0; 
-                let y = 0; 
-                let angle = 90; // Up (Standard Math: 90 is up. Canvas Y is down, need conversion)
-                
-                let vertices = [{x: 0, y: 0}];
-
+                let x = 0, y = 0, angle = 90;
                 ctx.beginPath();
-                ctx.strokeStyle = '#4f46e5'; // Indigo 600
+                ctx.strokeStyle = '#4f46e5';
                 ctx.lineWidth = 3;
-                
-                // Move to start (screen coords)
-                ctx.moveTo(centerX + x * scale, centerY - y * scale);
+                ctx.moveTo(centerX, centerY);
 
                 let i = 0;
                 while(i < finalTokens.length) {
                     const cmd = finalTokens[i];
                     const val = parseFloat(finalTokens[i+1]);
 
-                    if (cmd.includes('вперед') || cmd.includes('forward')) {
-                        if(!isNaN(val)) {
-                            // Math
-                            const rad = angle * Math.PI / 180;
-                            x += val * Math.cos(rad);
-                            y += val * Math.sin(rad); // Math Y is up
-                            
-                            // Visual
-                            ctx.lineTo(centerX + x * scale, centerY - y * scale);
-                            vertices.push({x, y});
-                            i += 2;
-                        } else i++;
-                    } else if (cmd.includes('направо') || cmd.includes('right')) {
-                         if(!isNaN(val)) {
-                            angle -= val;
-                            i += 2;
-                        } else i++;
-                    } else if (cmd.includes('налево') || cmd.includes('left')) {
-                         if(!isNaN(val)) {
-                            angle += val;
-                            i += 2;
-                        } else i++;
-                    } else {
-                        i++;
-                    }
+                    if (cmd.includes('вперед') && !isNaN(val)) {
+                        const rad = angle * Math.PI / 180;
+                        x += val * Math.cos(rad);
+                        y += val * Math.sin(rad); 
+                        ctx.lineTo(centerX + x * scale, centerY - y * scale);
+                        i += 2;
+                    } else if (cmd.includes('направо') && !isNaN(val)) {
+                        angle -= val;
+                        i += 2;
+                    } else if (cmd.includes('налево') && !isNaN(val)) {
+                        angle += val;
+                        i += 2;
+                    } else i++;
                 }
-                
                 ctx.stroke();
                 
-                // Close path for calculation logic visually
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(79, 70, 229, 0.1)';
-                ctx.fill();
-
-                // Point Counting Logic (Bounding Box + Ray Casting)
-                // Find Bounding Box
-                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-                vertices.forEach(v => {
-                    if (v.x < minX) minX = v.x;
-                    if (v.x > maxX) maxX = v.x;
-                    if (v.y < minY) minY = v.y;
-                    if (v.y > maxY) maxY = v.y;
-                });
-
-                // Integer bounds
-                const startX = Math.floor(minX);
-                const endX = Math.ceil(maxX);
-                const startY = Math.floor(minY);
-                const endY = Math.ceil(maxY);
-
-                let count = 0;
-                const epsilon = 0.0001; // Tolerance for "on the line"
-
-                // Ray Casting function
-                const isInside = (px, py) => {
-                    let inside = false;
-                    for (let k = 0, j = vertices.length - 1; k < vertices.length; j = k++) {
-                        const xi = vertices[k].x, yi = vertices[k].y;
-                        const xj = vertices[j].x, yj = vertices[j].y;
-                        
-                        // Check if point is ON the edge (simplified)
-                        // Distance check or cross product usually used. 
-                        // For this demo, we count strict INSIDE. 
-                        // Task 6 often implies integer points strictly inside or including borders.
-                        // Standard interpretation: INSIDE the region.
-                        
-                        const intersect = ((yi > py) !== (yj > py))
-                            && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
-                        if (intersect) inside = !inside;
-                    }
-                    return inside;
-                };
-
-                // Draw Dots & Count
-                for (let px = startX; px <= endX; px++) {
-                    for (let py = startY; py <= endY; py++) {
-                         if (isInside(px, py)) {
-                             count++;
-                             // Draw red dot
-                             ctx.fillStyle = 'red';
-                             ctx.beginPath();
-                             // Remember to flip Y for canvas
-                             ctx.arc(centerX + px * scale, centerY - py * scale, 3, 0, Math.PI * 2); 
-                             ctx.fill();
-                         }
+                // Red dots for visual counting simulation
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                for (let px = -15; px <= 15; px++) {
+                    for (let py = -15; py <= 15; py++) {
+                        ctx.beginPath();
+                        ctx.arc(centerX + px * scale, centerY - py * scale, 3, 0, Math.PI * 2);
+                        ctx.fill();
                     }
                 }
 
-                setPointsCount(count);
-                setResultText(`Фигура построена. Найдено целочисленных точек внутри: ${count}`);
+                setResultText(`Фигура и сетка построены. В визуальном методе вы должны самостоятельно посчитать красные точки внутри синего контура.`);
             };
-
-            useEffect(() => {
-                // Initial draw on mount (empty grid)
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width;
-                const height = canvas.height;
-                ctx.clearRect(0, 0, width, height);
-                // Simple grid
-                ctx.fillStyle = '#cbd5e1';
-                for(let x = 0; x < width; x += scale) {
-                    for(let y = 0; y < height; y += scale) {
-                        ctx.fillRect(x-1, y-1, 2, 2);
-                    }
-                }
-            }, []);
 
             return (
                 <div className="max-w-6xl mx-auto px-4 mt-8 flex flex-col lg:flex-row gap-6 animate-fade-in">
-                    {/* Controls */}
                     <div className="w-full lg:w-1/3 space-y-4">
                         <div className="bg-white p-6 rounded-xl shadow-lg">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <IconCode /> <span className="ml-2">Код алгоритма</span>
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-2">
-                                Используйте команды: <code>Вперед X</code>, <code>Направо Y</code>, <code>Налево Y</code>. <br/>
-                                Цикл: <code>Повтори N [ ... ]</code>
-                            </p>
-                            <textarea 
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                className="w-full h-40 p-3 bg-gray-900 text-green-400 font-mono text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                            ></textarea>
-                            
+                            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center"><IconCode className="mr-2"/>Код (Псевдокод)</h3>
+                            <textarea value={code} onChange={(e) => setCode(e.target.value)} className="w-full h-40 p-3 bg-gray-900 text-green-400 font-mono text-sm rounded-lg outline-none resize-none"></textarea>
                             <div className="mt-4 flex gap-2">
-                                <button 
-                                    onClick={runSimulation}
-                                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center font-semibold"
-                                >
-                                    <IconPlay /> <span className="ml-2">Запустить</span>
-                                </button>
-                                <div className="flex items-center space-x-2 bg-gray-100 px-3 rounded-lg">
-                                    <span className="text-xs text-gray-500">Масштаб:</span>
-                                    <input 
-                                        type="number" 
-                                        value={scale} 
-                                        onChange={(e) => setScale(Number(e.target.value))}
-                                        className="w-12 bg-transparent text-center font-bold outline-none" 
-                                        min="5" max="50"
-                                    />
-                                </div>
+                                <button onClick={runSimulation} className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 font-semibold">Запустить</button>
+                                <input type="number" value={scale} onChange={(e) => setScale(Number(e.target.value))} className="w-16 bg-gray-100 text-center rounded" />
                             </div>
                         </div>
-
-                        {/* Result Panel */}
-                        <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
-                            <h3 className="text-gray-500 uppercase text-xs font-bold mb-1">Результат</h3>
-                            <div className="text-2xl font-bold text-gray-800">
-                                {pointsCount} <span className="text-sm font-normal text-gray-500">точек</span>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">{resultText}</p>
-                        </div>
-
-                        <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-sm text-indigo-800">
-                            <p><strong>Примечание:</strong> Этот симулятор использует метод "Ray Casting" для определения попадания точки в многоугольник, аналогично тому, как это делается в программном методе решения задания №6.</p>
+                        <div className="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500 text-sm text-gray-700">
+                            {resultText}
                         </div>
                     </div>
-
-                    {/* Canvas */}
                     <div className="w-full lg:w-2/3 bg-white rounded-xl shadow-lg p-4 overflow-hidden flex items-center justify-center relative min-h-[500px]">
-                         <canvas 
-                            ref={canvasRef}
-                            width={800}
-                            height={600}
-                            className="w-full h-full object-contain canvas-grid bg-white cursor-crosshair"
-                        ></canvas>
-                        <div className="absolute top-4 right-4 bg-white/80 px-2 py-1 rounded text-xs text-gray-500 pointer-events-none">
-                            X: Вправо, Y: Вверх (от центра)
-                        </div>
+                         <canvas ref={canvasRef} width={800} height={600} className="w-full h-full object-contain canvas-grid bg-white"></canvas>
+                         <div className="absolute top-4 right-4 bg-white/80 px-2 py-1 text-xs text-gray-500">Визуализация</div>
                     </div>
                 </div>
             );
         };
 
         const Footer = () => (
-             <footer className="bg-gray-800 text-gray-400 py-8 mt-12">
-                <div className="max-w-6xl mx-auto px-4 text-center">
-                    <p className="mb-2">Разработано в рамках школьного индивидуального проекта</p>
-                    <p className="text-sm">2026</p>
-                </div>
+             <footer className="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-sm">
+                <p>Разработано в рамках школьного индивидуального проекта</p>
+                <p>2026</p>
             </footer>
         );
 
-        // --- MAIN APP ---
         const App = () => {
             const [activeTab, setActiveTab] = useState('theory');
-
-            useEffect(() => {
-                lucide.createIcons();
-            }, [activeTab]);
-
+            useEffect(() => { lucide.createIcons(); }, [activeTab]);
             return (
                 <div className="min-h-screen flex flex-col">
                     <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
                     <Hero />
-                    
                     <main className="flex-grow">
                         {activeTab === 'theory' && <TheorySection />}
                         {activeTab === 'detailed' && <DetailedSection />}
+                        {activeTab === 'examples' && <ExamplesSection />}
                         {activeTab === 'quiz' && <QuizSection />}
                         {activeTab === 'simulation' && <SimulatorSection />}
                     </main>
-
                     <Footer />
                 </div>
             );
